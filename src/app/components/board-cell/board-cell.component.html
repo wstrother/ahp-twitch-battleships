@@ -1,0 +1,14 @@
+<div class="cell-inner" 
+    (click)="handleClick($event)"
+    (contextmenu)="handleClick($event)"
+    [ngClass]="{
+        'has-ship': cell.hasShip && !hidden,
+        'has-shot': cell.shot,
+        'has-mark': cell.marked,
+        'has-hit': cell.shot && cell.hasShip,
+        'has-sink': cell.shipSunk,
+        'selected': cell.selected
+    }"
+    >
+    
+</div>

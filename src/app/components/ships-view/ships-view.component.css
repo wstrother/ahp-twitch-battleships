@@ -1,0 +1,14 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.ship-container {
+    display: flex;
+    margin: 1rem;
+}
+
+.placed {
+    opacity: 0.5;
+}

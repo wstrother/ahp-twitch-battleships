@@ -1,0 +1,12 @@
+:host {
+    background-color: red;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.board-grid {
+    display: grid;
+    border: 1px solid black;
+    grid-template-columns: repeat(10, fit-content(100%));
+}

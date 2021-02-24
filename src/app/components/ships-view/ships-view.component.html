@@ -1,0 +1,11 @@
+<div 
+    class="ship-container" 
+    *ngFor="let ship of ships"
+    [ngClass]="{
+        'selected': ship.selected,
+        'placed': ship.placed
+    }"
+    (click)="selectShip(ship)"
+>
+    <app-board-cell *ngFor="let n of getCells(ship)" [cell]="n"></app-board-cell>
+</div>
