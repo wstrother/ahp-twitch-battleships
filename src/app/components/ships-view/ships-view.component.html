@@ -7,5 +7,8 @@
     }"
     (click)="selectShip(ship)"
 >
-    <app-board-cell *ngFor="let n of getCells(ship)" [cell]="n"></app-board-cell>
+    <app-board-cell 
+        *ngFor="let n of getCells(ship)" 
+        [cell]="n"
+    ></app-board-cell>
 </div>

@@ -1,0 +1,38 @@
+.btn {
+    border: 1px solid black;
+    margin: 1rem;
+    background-color: grey;
+    padding: 5px;
+    color: white;
+    cursor: default;
+    user-select: none;
+    text-align: center;
+}
+
+.btn:active {
+    transform: translate(2px, 2px);
+}
+
+.new-game-form {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.form-option {
+    border: 1px solid black;
+    margin: 0.25rem;
+    display: flex;
+    justify-content: center;
+}
+
+.form-option-label {
+    background-color: gray;
+    width: 200px;
+    text-align: right;
+    padding-right: 1rem;
+}
+
+input {
+    width: 200px;
+}

@@ -7,6 +7,7 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 })
 export class BoardUiComponent implements OnInit {
   @Output() toggle: EventEmitter<any> = new EventEmitter();
+  @Output() start: EventEmitter<any> = new EventEmitter();
 
   constructor() { }
 
@@ -15,5 +16,9 @@ export class BoardUiComponent implements OnInit {
 
   toggleShips(): void {
     this.toggle.emit(null);
+  }
+
+  startGame(): void {
+    this.start.emit(null);
   }
 }

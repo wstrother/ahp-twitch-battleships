@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Cell } from 'src/app/models/cell';
+import { BoardService } from 'src/app/services/board.service';
 
 @Component({
   selector: 'app-board-cell',
@@ -11,10 +12,15 @@ export class BoardCellComponent implements OnInit {
   @Input() hidden: boolean;
   @Output() cellClicked: EventEmitter<any> = new EventEmitter();
 
-  constructor() { }
+  constructor(private bs: BoardService) { }
 
   ngOnInit(): void {
   }
+
+  getCellSize(): string {
+    return `${this.bs.cellSize}px`;
+  }
+
 
   handleClick(event: any): void {
     event.preventDefault();

@@ -1,0 +1,11 @@
+
+<app-ships-view
+    *ngIf="ships"
+    [ships]="ships"
+></app-ships-view>
+
+<app-board-view 
+    *ngIf="board"
+    (contextmenu)="$event.preventDefault()"
+    [board]="board"
+></app-board-view>

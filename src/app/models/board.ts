@@ -19,7 +19,7 @@ export class Board {
     cells: Cell[] = [];
 
     constructor(public width: number, public numCells: number) {
-        for (let i = 0; i <numCells; i++) {
+        for (let i = 0; i < numCells; i++) {
             this.cells.push(new Cell());
         }
     }

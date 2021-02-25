@@ -1,8 +1,8 @@
-<app-ships-view>
-    
-</app-ships-view>
-
-<div #boardElement class="board-grid" *ngIf="board">
+<div #boardElement 
+    class="board-grid" 
+    *ngIf="board" 
+    [ngStyle]="{'grid-template-columns': getGridStyle()}"
+>
     <app-board-cell 
         *ngFor="let cell of this.board.cells" 
         [cell]="cell" 
@@ -10,5 +10,3 @@
         (cellClicked)="handleClick($event, cell)"
     ></app-board-cell>
 </div>
-
-<app-board-ui (toggle)="toggleShips()"></app-board-ui>

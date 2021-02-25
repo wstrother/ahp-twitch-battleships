@@ -1,9 +1,11 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { BoardViewComponent } from './components/board-view/board-view.component';
+import { NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
+import { PlaceShipsPageComponent } from './pages/place-ships-page/place-ships-page.component';
 
 const routes: Routes = [
-  {path: '', component: BoardViewComponent}
+  {path: 'place', component: PlaceShipsPageComponent},
+  {path: '', component: NewGamePageComponent}
 ];
 
 @NgModule({

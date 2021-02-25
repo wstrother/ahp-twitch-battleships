@@ -1,0 +1,21 @@
+<h1>Create a New Game!</h1>
+
+<div class="new-game-form">
+    <div class="form-option">
+        <span class="form-option-label">Name:</span>
+        <input type="text" [(ngModel)]="gameName" name="gameName" />
+    </div>
+
+    <div class="form-option">
+        <span class="form-option-label">Board Width:</span>
+        <input type="number" [(ngModel)]="boardWidth" name="boardWidth" />
+    </div>
+    
+    <div class="form-option">
+        <span class="form-option-label">Total Cells:</span>
+        <input type="number" [(ngModel)]="totalCells" name="totalCells" />
+    </div>
+
+</div>
+
+<div class="btn" (click)="makeGame()">Create!</div>
