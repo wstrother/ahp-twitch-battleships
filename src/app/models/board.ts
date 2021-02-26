@@ -18,8 +18,8 @@ class BoardError extends Error {
 export class Board {
     cells: Cell[] = [];
 
-    constructor(public width: number, public numCells: number) {
-        for (let i = 0; i < numCells; i++) {
+    constructor(public width: number, public totalCells: number) {
+        for (let i = 0; i < totalCells; i++) {
             this.cells.push(new Cell());
         }
     }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { GameDatabaseService } from 'src/app/services/game.database.service';
+import { first } from 'rxjs/operators';
+import { GameDatabaseService, GameDoc } from 'src/app/services/game.database.service';
 
 @Component({
   selector: 'app-new-game-page',
@@ -23,11 +24,12 @@ export class NewGamePageComponent implements OnInit {
       boardWidth: this.boardWidth,
       totalCells: this.totalCells,
       shipArgs: [5, 4, 4, 3, 2] // add UI for ship args later
-    }).then(
-      (data: any) => {
-        this.router.navigate(["/place", {id: data.key}]);
-      },
-      (err) => {console.log(err)}
+    });
+
+    this.db.currentGame.pipe(first()).subscribe(
+      (game: GameDoc) => {
+        this.router.navigate(["/place", {'id': game.key}]);
+      }
     );
   }
 }

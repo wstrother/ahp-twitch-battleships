@@ -8,7 +8,7 @@ export class Ship {
     
     direction: "x" | "y" = "x";
 
-    constructor(public size: number) {}
+    constructor(public size: number, public key: string) {}
 
     get isSunk(): boolean {
         if (this.getHits().length === this.size) {
