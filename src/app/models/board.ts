@@ -40,6 +40,7 @@ export class Board {
     setShipPosition(ship: Ship, row: number, col: number) {
         let cells = [];
         let currentCell = null;
+        let newPos = {row, col};
 
         for (let i = 0; i < ship.size; i++) {
             currentCell = this.getCell(row, col);
@@ -59,6 +60,6 @@ export class Board {
             }
         }
 
-        ship.setPosition(row, col, cells);
+        ship.setPosition(newPos.row, newPos.col, cells);
     }
 }

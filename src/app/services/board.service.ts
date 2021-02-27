@@ -33,9 +33,10 @@ export class BoardService {
     let ship: Ship;
 
     docs.forEach((doc) => {
-      ship = new Ship(doc.size, doc.key);
+      ship = new Ship(doc.size, doc.key, doc.direction);
+      console.log(ship);
       ships.push(ship);
-      if (ship.placed) {
+      if (doc.placed) {
         this.addShip(board, ship, doc.row, doc.col)
       }
     });
@@ -55,11 +56,22 @@ export class BoardService {
 
   selectShip(ship: Ship): void {
     if (this._previous) {
-      this._previous.selected = false;
+      let prev = this._previous;
+      prev.selected = false;
+      if (prev.placed) {
+        console.log(prev);
+        this.db.updateShip(prev.key, {
+          placed: true,
+          row: prev.row,
+          col: prev.col,
+          direction: prev.direction
+        })
+      }
     }
 
     if (ship) {
       ship.selected = true;
+      this.db.updateShip(ship.key, {placed: false});
       // if ship is selected make sure placed is false in database
     }
 

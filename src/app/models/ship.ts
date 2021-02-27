@@ -6,9 +6,7 @@ export class Ship {
     col: number = 0;
     selected: boolean = false;
     
-    direction: "x" | "y" = "x";
-
-    constructor(public size: number, public key: string) {}
+    constructor(public size: number, public key: string, public direction: "x" | "y") {}
 
     get isSunk(): boolean {
         if (this.getHits().length === this.size) {

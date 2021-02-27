@@ -19,17 +19,24 @@ export class NewGamePageComponent implements OnInit {
   }
 
   makeGame(): void {
+    // passes form data to the database to create a new game
+    // and returns a promise to get the gameKey
+    // use the gameKey when returned to navigate to the '/place/
+    // page with gameKey as 'game' parameter
     this.db.createGame({
       name: this.gameName,
       boardWidth: this.boardWidth,
       totalCells: this.totalCells,
       shipArgs: [5, 4, 4, 3, 2] // add UI for ship args later
-    });
-
-    this.db.currentGame.pipe(first()).subscribe(
-      (game: GameDoc) => {
-        this.router.navigate(["/place", {'id': game.key}]);
-      }
-    );
+    }).subscribe(
+      done => done.then(console.log)
+    )
+    // .then(
+    //   (gameKey) => {
+    //     this.router.navigate(["/place", {'game': gameKey}]);
+    //   }
+    // )
+    // add .catch later to provide front end error handling to the
+    // html template
   }
 }
