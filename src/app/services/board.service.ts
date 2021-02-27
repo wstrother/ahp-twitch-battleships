@@ -34,7 +34,6 @@ export class BoardService {
 
     docs.forEach((doc) => {
       ship = new Ship(doc.size, doc.key, doc.direction);
-      console.log(ship);
       ships.push(ship);
       if (doc.placed) {
         this.addShip(board, ship, doc.row, doc.col)
@@ -46,7 +45,6 @@ export class BoardService {
 
   addShip(board: Board, ship: Ship, row: number, col: number): void {
     board.setShipPosition(ship, row, col);
-    // will update the game state to the database
   }
 
   handleShot(cell: Cell): void {
@@ -58,8 +56,10 @@ export class BoardService {
     if (this._previous) {
       let prev = this._previous;
       prev.selected = false;
+
+      // if a previously selected ship is placed on the board
+      // make sure it's current state is updated in the database
       if (prev.placed) {
-        console.log(prev);
         this.db.updateShip(prev.key, {
           placed: true,
           row: prev.row,
@@ -71,8 +71,9 @@ export class BoardService {
 
     if (ship) {
       ship.selected = true;
-      this.db.updateShip(ship.key, {placed: false});
+
       // if ship is selected make sure placed is false in database
+      this.db.updateShip(ship.key, {placed: false});
     }
 
     this._selected.next(ship);

@@ -27,15 +27,13 @@ export class NewGamePageComponent implements OnInit {
       name: this.gameName,
       boardWidth: this.boardWidth,
       totalCells: this.totalCells,
-      shipArgs: [5, 4, 4, 3, 2] // add UI for ship args later
+      shipArgs: [5, 4, 4, 3, 2] //  TODO: add UI for ship args later
     }).subscribe(
-      done => done.then(console.log)
-    )
-    // .then(
-    //   (gameKey) => {
-    //     this.router.navigate(["/place", {'game': gameKey}]);
-    //   }
-    // )
+      (gameKey) => {
+        this.router.navigate(["/place", {'game': gameKey}])
+      }
+    );
+    // TODO:
     // add .catch later to provide front end error handling to the
     // html template
   }
