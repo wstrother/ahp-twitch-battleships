@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList,  SnapshotAction } from '@angular/fire/database';
-import { BehaviorSubject, from, Observable, Subject, combineLatest, Subscription } from 'rxjs';
-import { first, map, mergeMap, take } from 'rxjs/operators';
+import { from, Observable, combineLatest, ReplaySubject } from 'rxjs';
+import { catchError, first, map, switchMap, take, tap } from 'rxjs/operators';
 import { DatabaseReference } from '@angular/fire/database/interfaces';
 
 
@@ -10,7 +10,11 @@ import { DatabaseReference } from '@angular/fire/database/interfaces';
 
 export class GameDoc {
   player1: string;
+  p1ready: boolean = false;
+
   player2: string;
+  p2ready: boolean = false;
+  
   key: string;
   boardWidth: number;
   totalCells: number;
@@ -18,10 +22,10 @@ export class GameDoc {
 
   static getFromSnapshot(action: SnapshotAction<any>): GameDoc {
     if (action.key === null) {
-      throw Error("Database error ocurred!")
+      throw Error("Database error ocurred!");
     }
     let g = new GameDoc();
-    g.key = action.key
+    g.key = action.key;
     Object.assign(g, action.payload.val());
 
     return g;
@@ -51,9 +55,16 @@ export class ShipDoc {
 }
 
 class FullGameError extends Error {
-  constructor(gameKey: string) {
-    super(`Game with key ${gameKey} already has two players`);
+  constructor() {
+    super(`This game already has two players`);
     this.name = "FullGameError";
+  }
+}
+
+class NoGameError extends Error {
+  constructor(gameKey: string) {
+    super(`No game with key ${gameKey} was found`);
+    this.name = "NoGameError";
   }
 }
 
@@ -61,17 +72,17 @@ class FullGameError extends Error {
   providedIn: 'root'
 })
 export class GameDatabaseService {
+  private playerKey: ReplaySubject<string> = new ReplaySubject(1);
+  private gameKey: ReplaySubject<string> = new ReplaySubject(1);
+  private playerConnected: ReplaySubject<boolean> = new ReplaySubject(1);
+  
+  private shipsRef: AngularFireList<any>;
   private gamesRef: AngularFireList<any>;
   private playersRef: AngularFireList<any>;
-  private shipsRef: AngularFireList<any>;
 
-  private currentGame: Subject<GameDoc> = new Subject();
-  private currentShips: Subject<ShipDoc[]> = new Subject();
-  private otherShips: Subject<ShipDoc[]> = new Subject();
-  
-  private playerKey: Subject<string> = new BehaviorSubject("");
-  private playerConnected: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
+  // create connections to the database and check that the current
+  // user has a record in the database by calling checkPlayer()
   constructor(private af: AngularFireDatabase) {
     this.gamesRef = this.af.list("/games");
     this.playersRef = this.af.list("/players");
@@ -80,24 +91,78 @@ export class GameDatabaseService {
     this.checkPlayer();
   }
   
-  // getPlayerKey()
-  // returns an observable of the playerKey to ensure that
-  // methods which require the playerKey value only execute
-  // once it has been checked against the database
+  // helper methods that return observable values of the
+  // playerKey, currentGame, and playerConnected subjects
+  // and ensure the subscription automatically closes after
+  // emitting a value;
+
   getPlayerKey(): Observable<string> {
-    return this.playerKey.asObservable().pipe(
-      first(s => s !== "")    // this presumes that checkPlayer() is only called once
-      //                      // and no other methods push a value to this observable!
+    return this.playerKey.asObservable();
+  }
+
+  getCurrentGame(): Observable<GameDoc> {
+
+    const getGameDoc = (gameKey: string) => this.af.object(`games/${gameKey}`)
+        .snapshotChanges().pipe(
+          map((game) => GameDoc.getFromSnapshot(game)),
+          catchError(() => {throw new NoGameError(gameKey)})
+        )
+
+    return this.gameKey.pipe(
+      switchMap(getGameDoc)
+    )
+  }
+
+  getConnection(): Observable<boolean> {
+    return this.playerConnected.pipe(
+      tap(b => {
+        if (!b) {throw new FullGameError();}
+      })
     );
   }
 
-  // getCurrentGame()
-  // returns an observable of the current game as a GameDoc object
-  // and ensures that it only ever emits a single value
-  getCurrentGame(): Observable<GameDoc> {
-    return this.currentGame.asObservable().pipe(
-      take(1)
-    )
+  
+  // helper method combines the streams of getCurrentGame() and
+  // getPlayerKey() methods to filter to only ships associated with
+  // the current game and player and creates ships for the player if
+  // none are found, also closes the subscription when enough ships
+  // for the game have been emitted
+  getCurrentShips(): Observable<ShipDoc[]> {
+
+    const currentShip$ = ([game, playerKey]) => {
+      return this.getGameShips(game.key).pipe(
+        // filter to ships for the current player
+        map(ships => ships.filter(s => s.playerKey === playerKey)),
+        
+        // if no ships are found, create ships for this game
+        tap(ships => {
+          if (ships.length === 0) {this.createShips(game, playerKey)}
+        }),
+        
+        // only emit the list of ships when all the ships for the
+        // game have been created
+        first(ships => ships.length === game.shipArgs.length)
+      )
+    }
+
+    return combineLatest([
+      this.getCurrentGame(),
+      this.getPlayerKey()
+    ]).pipe(      // ([game, playerKey])
+      switchMap(currentShip$)
+    );
+  }
+
+  // returns the "/ships" collection from the database filtered to
+  // a specific gameKey
+  getGameShips(gameKey: string): Observable<ShipDoc[]> {
+    const gameFilter = (ref: DatabaseReference) => ref.orderByChild("gameKey").equalTo(gameKey);
+
+    return this.af.list("/ships", gameFilter).snapshotChanges()
+      .pipe(map(
+        ships => ships.map(s => ShipDoc.getFromSnapshot(s))
+      )
+    );
   }
 
   // checkPlayer()
@@ -108,7 +173,6 @@ export class GameDatabaseService {
     const updatePlayerKey = (key: string) => {
       this.playerKey.next(key);
       localStorage.setItem("playerKey", key);
-      console.log(`PlayerKey set to ${key}`)
     }
     
     // check localStorage for stored playerKey
@@ -158,16 +222,18 @@ export class GameDatabaseService {
         boardWidth,
         totalCells,
         shipArgs,
+        
         player1: playerKey,
-        p1ready: false
+        p1ready: false,
+
+        p2ready: false
       }).then(r => r.key));
     }
     
     // get the playerKey and pipe it to the getGameKey
     // Observable instead
     return this.getPlayerKey().pipe(
-      take(1),
-      mergeMap(getGameKey)
+      switchMap(getGameKey)
     );
   }
 
@@ -175,52 +241,34 @@ export class GameDatabaseService {
   // used by place-ships-page and play-game-page to set a reference
   // to the current game through the route 'id' parameter
   setCurrentGame(gameKey: string): void {
-    // set a reference to the current game from the database
-    // as a Subject<GameDoc>
-    this.af.object(`games/${gameKey}`)
-      .snapshotChanges().pipe(
-        take(1),
-        map((game) => GameDoc.getFromSnapshot(game))
-      ).subscribe(
-      (game) => {
-        this.currentGame.next(game);
-
-        // when the game is found in the database, set
-        // ships for the current player
-        this.setShips(game);
-      },
-      (err) => {
-        console.log(`No game was found with key: ${gameKey}`);
-        throw err;
-      }
-    );
+    this.gameKey.next(gameKey);
   }
 
   // connectPlayer()
   // ensures that the current playerKey is associated to the current game
-  // in the database
+  // in the database and throws an error if the game is full
   connectPlayer(): void {
     // combine playerKey and currentGame values
     combineLatest([
       this.getPlayerKey(),
       this.getCurrentGame()
-    ]).subscribe(
+    ]).pipe(take(1)).subscribe(
       ([playerKey, game]) => {
         // set booleans for each playerKey match
         // and whether or not the player2 value
         // should be pushed to the database
+        const p2empty = game.player2 === undefined;
         const p1 = game.player1 === playerKey;
-        const p2 = game.player2 === playerKey;
-        const make2 = !p1 && game.player2 === undefined;
-        const gameFull = !(p1 || p2 || make2);
+        const p2 = game.player2 === playerKey || p2empty;
+        const gameFull = !(p1 || p2);
 
-        // throw an error if both player keys exist and
+        // send false if both player keys exist and
         // neither is a match for the current playerKey
-        if (gameFull) {throw new FullGameError(game.key);}
+        if (gameFull) {this.playerConnected.next(false);}
 
         // push the player2 key to the database and set
         // the p2ready flag to false if the slot is empty
-        if (make2) {
+        if (p2empty && !p1) {
           this.gamesRef.update(game.key, {
             player2: playerKey,
             p2ready: false
@@ -231,64 +279,6 @@ export class GameDatabaseService {
         if (p1 || p2) {this.playerConnected.next(true);}
       }
     );
-  }
-
-  // setCurrentShips()
-  // caled after the setCurrentGame method resolves a document in
-  // the database for the current game and creates the initial ships
-  // for the current player if none are found in the database
-  //
-  // TODO: decompose into two separate methods for "/place" and "/play"
-  // routes. The "/place" route doesn't need reference to otherShips
-  // and may needlessly prolong subscription to the database list query
-  setShips(game: GameDoc): void {
-    // create an Observable on the '/ships' collection where items
-    // match the current gameKey
-    const shipsFilter = (ref: DatabaseReference) => ref.orderByChild("gameKey").equalTo(game.key);
-    const shipsList$ = this.af.list("/ships", shipsFilter).snapshotChanges()
-      .pipe(map(ships => ships.map(s => ShipDoc.getFromSnapshot(s)))
-    );
-
-    // destructure the getPlayerKey() and shipsList observables into
-    // the playerKey string, and a current / other list for the
-    // ShipDoc list, 
-    const splitShips = ([playerKey, ships]) => {
-      return {
-        playerKey,
-        current: ships.filter((s: ShipDoc) => s.playerKey === playerKey),
-        other: ships.filter((s: ShipDoc) => s.playerKey !== playerKey)
-      }
-    }
-
-    // declare subscription variable so that it can be cancelled
-    let sub: Subscription;
-
-    const handleShips = ({playerKey, current, other}) => {
-      // if no ships are found belonging to the current player they are
-      // generated and added to the database
-      if (current.length === 0) {
-        this.createShips(game, playerKey);
-      }
-
-      // pass both lists of ships to their respective Subjects
-      this.currentShips.next(current);
-      this.otherShips.next(other);
-
-      // if both lists of ships match the number of ship arguments
-      // in the GameDoc's parameters then unsubscribe from the list
-      let currentDone = current.length === game.shipArgs.length;
-      let otherDone = other.length === game.shipArgs.length;
-      if (currentDone && otherDone) {sub.unsubscribe();}
-    }
-
-    // combine subscriptions to the playerKey and shipsList
-    // and subscribe
-    sub = combineLatest([
-      this.getPlayerKey(),
-      shipsList$
-    ]).pipe(          //  -> [playerKey, ships]
-      map(splitShips) //  -> {playerkey, current, other}
-    ).subscribe(handleShips);
   }
 
   // createShips()

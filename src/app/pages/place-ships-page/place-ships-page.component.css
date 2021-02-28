@@ -1,4 +1,10 @@
 :host {
     display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.placement-panel {
+    display: flex;
     justify-content: space-evenly;
 }
