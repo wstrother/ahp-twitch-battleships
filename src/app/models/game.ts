@@ -1,4 +1,10 @@
+import { AngularFireList } from "@angular/fire/database";
 import { DbItem } from "./db-item";
+
+
+export class ConnectionStatus {
+    constructor(public playerNum: number, public otherConnected: boolean, public otherReady: boolean) {}
+  }
 
 export class Game extends DbItem {
     player1: string = "";
@@ -29,4 +35,38 @@ export class Game extends DbItem {
         return p1 ? 1 : 2;
     }
 
+    getConnectionStatus(key: string): any {
+        const n = this.getPlayerNum(key);
+
+        const getStatus = (k: string, ready: boolean) => {
+            return new ConnectionStatus(n, k !== "", ready)
+        }
+        
+        const status = [
+            getStatus(this.player1, this.p1ready),
+            getStatus(this.player2, this.p2ready)
+        ]
+
+        return status[n === 1 ? 1 : 0]
+    }
+
+    getReady(key: string): boolean {
+        const n = this.getPlayerNum(key);
+        const ready = [
+            this.p1ready, this.p2ready
+        ]
+        return ready[n === 1 ? 0 : 1]
+    }
+
+    setReady(key: string, collection: AngularFireList<Game>): void {
+        const n = this.getPlayerNum(key);
+
+        if (n === 1 && !this.p1ready) {
+            this.update(collection, {p1ready: true})
+        }
+
+        if (n === 2 && !this.p2ready) {
+            this.update(collection, {p2ready: true})
+        }
+    }
 }

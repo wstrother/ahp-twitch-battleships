@@ -6,6 +6,7 @@ import { DatabaseReference } from '@angular/fire/database/interfaces';
 import { Game } from '../models/game';
 import { Ship } from '../models/ship';
 
+let SHIPS_CREATED: boolean = false;
 
 class FullGameError extends Error {
   constructor() {
@@ -32,7 +33,6 @@ export class GameDatabaseService {
   private shipsRef: AngularFireList<any>;
   private gamesRef: AngularFireList<any>;
   private playersRef: AngularFireList<any>;
-
 
   constructor(private af: AngularFireDatabase) {
     this.gamesRef = this.af.list("/games");
@@ -81,7 +81,7 @@ export class GameDatabaseService {
         
         // if no ships are found, create ships for this game
         tap(ships => {
-          if (ships.length === 0) {this.createShips(game, playerKey)}
+          if (ships.length === 0 && !SHIPS_CREATED) {this.createShips(game, playerKey)}
         }),
         
         // only emit the list of ships once all the ships for the
@@ -149,7 +149,7 @@ export class GameDatabaseService {
     );
   }
 
-  addNewGame(game: Game): Observable<Game> { 
+  createGame(game: Game): Observable<Game> { 
 
     return this.getPlayerKey().pipe(
       switchMap((playerKey: string) => {
@@ -181,6 +181,7 @@ export class GameDatabaseService {
 
         if (playerNum) {
           this.playerConnected.next(true);
+          
         } else {
           this.playerConnected.next(false);
         }
@@ -189,8 +190,20 @@ export class GameDatabaseService {
     );
   }
 
-  createShips(game: Game, playerKey: string): void {
+  setReady(): void {
+    combineLatest([
+      this.getPlayerKey(),
+      this.getCurrentGame()
+    ]).pipe(take(1)).subscribe(
+      ([playerKey, game]) => {
+        game.setReady(playerKey, this.gamesRef);
+      }
+    )
+  }
 
+  createShips(game: Game, playerKey: string): void {
+    SHIPS_CREATED = true;
+    
     game.shipArgs.forEach(
       (n) => {
         let s = new Ship(n, game.key, playerKey);

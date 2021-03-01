@@ -13,6 +13,8 @@ import { AngularFireDatabaseModule} from '@angular/fire/database';
 import { environment } from 'src/environments/environment';
 import { PlaceShipsPageComponent } from './pages/place-ships-page/place-ships-page.component';
 import { FormsModule } from '@angular/forms';
+import { ConnectionStatusComponent } from './components/connection-status/connection-status.component';
+import { PlayGamePageComponent } from './pages/play-game-page/play-game-page.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +24,9 @@ import { FormsModule } from '@angular/forms';
     BoardUiComponent,
     ShipsViewComponent,
     NewGamePageComponent,
-    PlaceShipsPageComponent
+    PlaceShipsPageComponent,
+    ConnectionStatusComponent,
+    PlayGamePageComponent
   ],
   imports: [
     BrowserModule,

@@ -1,18 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { GameDatabaseService } from 'src/app/services/game.database.service';
 import { BoardService } from 'src/app/services/board.service';
 import { Board } from 'src/app/models/board';
 import { Ship } from 'src/app/models/ship';
 import { combineLatest, Observable } from 'rxjs';
-import { take, tap } from 'rxjs/operators';
-import { Game } from 'src/app/models/game';
+import { map, take, tap } from 'rxjs/operators';
+import { ConnectionStatus, Game } from 'src/app/models/game';
 
-class PlayerStatus {
-  playerNum: number;
-  opponentReady: boolean;
-  opponentConnected: boolean;
-}
 
 @Component({
   selector: 'app-place-ships-page',
@@ -22,11 +17,15 @@ class PlayerStatus {
 export class PlaceShipsPageComponent implements OnInit {
   board: Observable<Board>;
   ships: Observable<Ship[]>;
+  status: Observable<ConnectionStatus>;
+  donePlacing: boolean = false;
 
-  errorMessage: string = "";
-  status: PlayerStatus = new PlayerStatus();
+  errorMessage: string;
 
-  constructor(private route: ActivatedRoute, private db: GameDatabaseService, private bs: BoardService) { }
+  constructor(
+    private route: ActivatedRoute, private router: Router, 
+    private db: GameDatabaseService, private bs: BoardService
+  ) { }
 
   ngOnInit(): void {
     
@@ -48,20 +47,26 @@ export class PlaceShipsPageComponent implements OnInit {
         this.db.getPlayerKey()
       ]).pipe(take(1));
     
-      
+
     const handleConnection = ([game, connection, playerKey]) => {
 
-      if (connection) {
-        const playerNum = (game.player1 === playerKey) ? 1 : 2;
+      let ready = game.getReady(playerKey);
 
-        this.ships = this.db.getCurrentShips();
+      if (connection && !ready) {
+        this.ships = this.db.getCurrentShips().pipe(
+          tap((ships) => {
+            this.donePlacing = ships.every(s => s.placed);
+          })
+        );
         this.board = this.bs.getBoard().pipe(
           tap((board) => {
             this.bs.loadCurrentShips(board);
           })
         );
-
-        // this.setStatus(playerNum); 
+        this.status = this.setStatus(playerKey);
+      } else {
+        this.errorMessage = "You've already started playing!"
+        this.startGame();
       }
 
     }
@@ -72,30 +77,16 @@ export class PlaceShipsPageComponent implements OnInit {
     );
   }
 
-  // setStatus(playerNum: number): void {
-  //   this.status.playerNum = playerNum;
-
-  //   const getStatusObj = (key: string | undefined, ready: boolean) => {
-  //     return {
-  //       opponentConnected: key !== undefined,
-  //       opponentReady: ready
-  //     }
-  //   }
-
-  //   const handleGame = (game: Game) => {
-  //     let status = [
-  //       getStatusObj(game.player1, game.p1ready),
-  //       getStatusObj(game.player2, game.p2ready)
-  //     ]
-
-  //     let other = playerNum == 1 ? status[1] : status[0];
-  //     Object.assign(this.status, other);
-  //   }
-
-  //   this.db.getCurrentGame().subscribe(handleGame);
-  // }
+  setStatus(playerKey: string): Observable<ConnectionStatus> {
+    return this.db.getCurrentGame().pipe(
+      map((game: Game) => {
+        return game.getConnectionStatus(playerKey);
+      })
+    );
+  }
 
   startGame(): void {
-    console.log("starting...");
+    let gameKey = this.route.snapshot.paramMap.get('game');
+    this.router.navigate(["/play", {game: gameKey}])
   }
 }

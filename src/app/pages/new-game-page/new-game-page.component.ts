@@ -23,7 +23,7 @@ export class NewGamePageComponent implements OnInit {
     // page with gameKey as 'game' parameter
     this.game.shipArgs = [5, 4, 3, 3, 2];
 
-    this.db.addNewGame(this.game).subscribe(
+    this.db.createGame(this.game).subscribe(
       () => {
         this.router.navigate(["/place", {'game': this.game.key}])
       }

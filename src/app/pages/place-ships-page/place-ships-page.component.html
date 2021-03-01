@@ -11,22 +11,15 @@
 </div>
 
 <div class="ui-panel">
-    <div class="flash-message">
+    <div class="flash-message" *ngIf="errorMessage">
         {{ errorMessage }}
     </div>
 
-    <!--
-        <div class="player-status">
-            Connected as Player {{ status.playerNum }}
-        </div>
-    
-        <div class="other-status">
-            <span *ngIf="status.opponentConnected">Opponent has connected...</span>
-            <span *ngIf="status.opponentReady">Opponent is ready to play</span>
-        </div>
-    
-        <div class="btn start-game" *ngIf="shipsPlaced" (click)="startGame()">
-            Start playing
-        </div>
-    -->
+    <app-connection-status *ngIf="(status | async) as s"
+        [status]="s"
+    ></app-connection-status>
+
+    <div class="btn" *ngIf="donePlacing" (click)="startGame()">
+        Start Game!
+    </div>
 </div>
