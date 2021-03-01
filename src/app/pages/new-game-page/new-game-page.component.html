@@ -3,17 +3,17 @@
 <div class="new-game-form">
     <div class="form-option">
         <span class="form-option-label">Name:</span>
-        <input type="text" [(ngModel)]="gameName" name="gameName" />
+        <input type="text" [(ngModel)]="game.name" name="gameName" />
     </div>
 
     <div class="form-option">
         <span class="form-option-label">Board Width:</span>
-        <input type="number" [(ngModel)]="boardWidth" name="boardWidth" />
+        <input type="number" [(ngModel)]="game.boardWidth" name="boardWidth" value=10 />
     </div>
     
     <div class="form-option">
         <span class="form-option-label">Total Cells:</span>
-        <input type="number" [(ngModel)]="totalCells" name="totalCells" />
+        <input type="number" [(ngModel)]="game.totalCells" name="totalCells" value=100 />
     </div>
 
 </div>

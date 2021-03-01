@@ -1,23 +1,38 @@
+import { SnapshotAction } from "@angular/fire/database";
 import { Cell } from "./cell";
+import { DbItem } from "./db-item";
 
-export class Ship {
+export class Ship extends DbItem {
     cells: Cell[] = [];
     row: number = 0;
     col: number = 0;
     selected: boolean = false;
+    placed: boolean = false;
+    direction: "x" | "y" = "x";
     
-    constructor(public size: number, public key: string, public direction: "x" | "y") {}
+    constructor(public size: number, public gameKey: string, public playerKey: string) {
+        super();
+    }
 
-    get isSunk(): boolean {
-        if (this.getHits().length === this.size) {
-            return true;
-        } else {
-            return false;
+    getAsData(): any {
+        return {
+            row: this.row,
+            col: this.col,
+            size: this.size,
+            direction: this.direction,
+            placed: this.placed,
+            gameKey: this.gameKey,
+            playerKey: this.playerKey
         }
     }
 
-    get placed(): boolean {
-        if (this.cells.length === this.size && !this.selected) {
+    // static getFromData(key: string, data: any) {
+    //     delete data.placed;
+    //     return super.getFromData(key, data);
+    // }
+
+    get isSunk(): boolean {
+        if (this.getHits().length === this.size) {
             return true;
         } else {
             return false;

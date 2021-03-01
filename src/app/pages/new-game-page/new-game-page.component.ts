@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { first } from 'rxjs/operators';
-import { GameDatabaseService, GameDoc } from 'src/app/services/game.database.service';
+import { Game } from 'src/app/models/game';
+import { GameDatabaseService } from 'src/app/services/game.database.service';
 
 @Component({
   selector: 'app-new-game-page',
@@ -9,9 +9,7 @@ import { GameDatabaseService, GameDoc } from 'src/app/services/game.database.ser
   styleUrls: ['./new-game-page.component.css']
 })
 export class NewGamePageComponent implements OnInit {
-  boardWidth: number = 10;
-  totalCells: number = 100;
-  gameName: string = "New Game";
+  game: Game = new Game("New Game", 10, 100);
   
   constructor(private router: Router, private db: GameDatabaseService) { }
 
@@ -23,14 +21,11 @@ export class NewGamePageComponent implements OnInit {
     // and returns a promise to get the gameKey
     // use the gameKey when returned to navigate to the '/place/
     // page with gameKey as 'game' parameter
-    this.db.createGame({
-      name: this.gameName,
-      boardWidth: this.boardWidth,
-      totalCells: this.totalCells,
-      shipArgs: [5, 4, 4, 3, 2] //  TODO: add UI for ship args later
-    }).subscribe(
-      (gameKey) => {
-        this.router.navigate(["/place", {'game': gameKey}])
+    this.game.shipArgs = [5, 4, 3, 3, 2];
+
+    this.db.addNewGame(this.game).subscribe(
+      () => {
+        this.router.navigate(["/place", {'game': this.game.key}])
       }
     );
     // TODO:

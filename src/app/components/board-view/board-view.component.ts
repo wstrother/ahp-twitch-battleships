@@ -83,7 +83,7 @@ export class BoardViewComponent implements OnInit {
     let coords = this.getCoordinates(event.x, event.y);
     
     try {
-      this.bs.addShip(this.board, ship, coords.row, coords.col);
+      this.board.setShipPosition(ship, coords.row, coords.col);
     } catch(err) {
       console.log(err.name);  // currently logs error name, could implement 
       //                      // collision resolution in the future
@@ -98,7 +98,7 @@ export class BoardViewComponent implements OnInit {
       //    left-click => sends a shot to boardService
       //    right-click => marks the Cell 
       if (event.type === "click") {
-        this.bs.handleShot(cell);
+        // this.bs.handleShot(cell);
       }
       if (event.type === "contextmenu") {
         cell.handleMark();

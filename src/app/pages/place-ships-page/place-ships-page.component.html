@@ -1,14 +1,12 @@
 
 <div class="placement-panel">
     <app-ships-view
-        *ngIf="ships"
-        [ships]="ships"
+        [ships]="ships | async"
     ></app-ships-view>
     
     <app-board-view 
-        *ngIf="board"
         (contextmenu)="$event.preventDefault()"
-        [board]="board"
+        [board]="board | async"
     ></app-board-view>
 </div>
 
@@ -17,12 +15,18 @@
         {{ errorMessage }}
     </div>
 
-    <div class="player-status">
-        Connected as Player {{ status.playerNum }}
-    </div>
-
-    <div class="other-status">
-        <span *ngIf="status.opponentConnected">Opponent has connected...</span>
-        <span *ngIf="status.opponentReady">Opponent is ready to play</span>
-    </div>
+    <!--
+        <div class="player-status">
+            Connected as Player {{ status.playerNum }}
+        </div>
+    
+        <div class="other-status">
+            <span *ngIf="status.opponentConnected">Opponent has connected...</span>
+            <span *ngIf="status.opponentReady">Opponent is ready to play</span>
+        </div>
+    
+        <div class="btn start-game" *ngIf="shipsPlaced" (click)="startGame()">
+            Start playing
+        </div>
+    -->
 </div>
