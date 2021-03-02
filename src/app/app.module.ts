@@ -15,6 +15,7 @@ import { PlaceShipsPageComponent } from './pages/place-ships-page/place-ships-pa
 import { FormsModule } from '@angular/forms';
 import { ConnectionStatusComponent } from './components/connection-status/connection-status.component';
 import { PlayGamePageComponent } from './pages/play-game-page/play-game-page.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { PlayGamePageComponent } from './pages/play-game-page/play-game-page.com
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
-    FormsModule
+    FormsModule,
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
