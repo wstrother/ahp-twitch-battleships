@@ -25,7 +25,7 @@ export class NewGamePageComponent implements OnInit {
 
     this.db.createGame(this.game).subscribe(
       () => {
-        this.router.navigate(["/place", {'game': this.game.key}])
+        this.router.navigate(["/place"], {queryParams: {'game': this.game.key}});
       }
     );
     // TODO:

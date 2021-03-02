@@ -1,15 +1,23 @@
-<div class="player-number">
-    Connected as Player {{ status.playerNum }}
+<div class="title">
+    <h3>
+        {{ title }}
+    </h3>
 </div>
 
-<div class="other-connected" *ngIf="status.otherConnected; else waiting">
-    Opponent has connected!
-</div>
+<div class="status-panel" *ngIf="(status$ | async) as status">
+    <span>
+        Connected as Player {{ status.playerNum }}.
+    </span>
 
-<ng-template class="other-connected" #waiting>
-    Waiting for opponent to connect...
-</ng-template>
+    <span *ngIf="!status.otherConnected">
+        Waiting for opponent...
+    </span>
 
-<div class="other-ready" *ngIf="status.otherReady">
-    Opponent is ready to play!
+    <span *ngIf="status.otherConnected && !status.otherReady">
+        Opponent is connected!
+    </span>
+
+    <span *ngIf="status.otherReady">
+        Opponent is ready to play!
+    </span>
 </div>

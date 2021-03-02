@@ -11,14 +11,6 @@
 </div>
 
 <div class="ui-panel">
-    <div class="flash-message" *ngIf="errorMessage">
-        {{ errorMessage }}
-    </div>
-
-    <app-connection-status *ngIf="(status | async) as s"
-        [status]="s"
-    ></app-connection-status>
-
     <div class="btn" *ngIf="donePlacing" (click)="startGame()">
         Start Game!
     </div>

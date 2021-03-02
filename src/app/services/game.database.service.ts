@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
 import { from, Observable, combineLatest, ReplaySubject } from 'rxjs';
-import { catchError, filter, first, map, switchMap, take, tap } from 'rxjs/operators';
+import { catchError, filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { DatabaseReference } from '@angular/fire/database/interfaces';
 import { Game } from '../models/game';
 import { Ship } from '../models/ship';
@@ -20,6 +20,12 @@ class NoGameError extends Error {
     super(`No game with key ${gameKey} was found`);
     this.name = "NoGameError";
   }
+}
+
+export interface GameConnection {
+  game: Game;
+  connected: boolean;
+  playerKey: string;
 }
 
 @Injectable({
@@ -68,6 +74,21 @@ export class GameDatabaseService {
       tap(b => {
         if (!b) {throw new FullGameError();}
       })
+    );
+  }
+
+  onGameConnection(): Observable<GameConnection> {
+    const getGameConnection = (
+      [game, connected, playerKey]
+    ) => { return {game, connected, playerKey} }
+
+    return combineLatest([
+      this.getCurrentGame(),
+      this.getConnection(),
+      this.getPlayerKey()
+    ]).pipe(
+      take(1),
+      map(getGameConnection)
     );
   }
 
@@ -159,6 +180,10 @@ export class GameDatabaseService {
 
       })
     );
+  }
+
+  updateGame(game: Game, data: any): void {
+    game.update(this.gamesRef, data);
   }
 
   setCurrentGame(gameKey: string): void {
