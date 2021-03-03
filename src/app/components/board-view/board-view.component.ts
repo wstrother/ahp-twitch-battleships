@@ -3,6 +3,7 @@ import { fromEvent, Subscription } from 'rxjs';
 import { Board } from 'src/app/models/board';
 import { Ghost, Ship } from 'src/app/models/ship';
 import { BoardService } from 'src/app/services/board.service';
+import { GameService } from 'src/app/services/game.service';
 
 
 class boundingBox {
@@ -32,7 +33,7 @@ class boundingBox {
 export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() board: Board;
 
-  showShips: boolean = true;
+  @Input() showShips: boolean = true;
   gameStarted: boolean = false;
   
   @Input() placeable: boolean = true;
@@ -43,7 +44,7 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('boardElement') el: any;
 
-  constructor(private bs: BoardService) { }
+  constructor(private bs: BoardService, private gs: GameService) { }
 
   getGridStyle(): string {
     return `repeat(${this.board.width}, fit-content(100%))`
@@ -53,8 +54,17 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
+    console.log(this.el);
+
     if (this.placeable) {
       this.setUpPlacement();
+    }
+
+    if (this.fireable) {
+      this.gs.onOtherReady().subscribe(
+        () => { this.setUpFiring(); }
+      )
+      
     }
   }
 
@@ -141,8 +151,29 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   setUpFiring(): void {
-    
-    // this.click$ = setEventMethod('click')
+
+    this.setEventMethod(
+      'click', (e) => { this.clickToFire(e) }
+    );
+
+    this.setEventMethod(
+      'contextmenu', (e) => { this.clickToMark(e) }
+    )
+  }
+
+  clickToFire(event: any): void {
+    let {row, col} = this.getCoordinates(event.x, event.y);
+    this.bs.handleShot(this.board, row, col);
+  }
+
+  clickToMark(event: any): void {
+
+    let {row, col} = this.getCoordinates(event.x, event.y);
+    let cell = this.board.getCell(row, col);
+
+    if (cell) {
+      cell.handleMark();
+    }
   }
 
   placeSelectedShip(event: any, ship: Ship): void {

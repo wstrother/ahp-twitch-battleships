@@ -1,11 +1,14 @@
 <div class="game-panel">
     <app-board-view class="player-board"
+        *ngIf="playerBoard"
         [board]="playerBoard"
         [placeable]="false"
         [fireable]="true"
+        [showShips]="false"
     ></app-board-view>
     
     <app-board-view class="other-board"
+        *ngIf="otherBoard"
         [board]="otherBoard"
         [placeable]="false"
         [fireable]="false"

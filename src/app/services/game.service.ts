@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { combineLatest, Observable, ReplaySubject } from 'rxjs';
-import { filter, first, map, switchMap, take } from 'rxjs/operators';
+import { first, map, switchMap, take } from 'rxjs/operators';
 import { Game } from '../models/game';
 import { Ship } from '../models/ship';
 import { DatabaseService } from './database.service';
@@ -44,8 +44,15 @@ export class GameService {
 
   }
 
+  onOtherReady(): Observable<Boolean> {
+    return this.otherShips.pipe(
+      map((ships: Ship[]) => {return true}),
+      take(1)
+    );
+  }
+
   getOtherShips(): Observable<Ship[]> {
-    return this.otherShips.asObservable().pipe(take(1));
+    return this.otherShips.pipe(take(1));
   }
 
   setOtherShips(): void {

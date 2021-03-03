@@ -1,6 +1,5 @@
 <div #boardElement 
     class="board-grid" 
-    *ngIf="board" 
     [ngStyle]="{'grid-template-columns': getGridStyle()}"
 >
     <app-board-cell 

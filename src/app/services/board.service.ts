@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { Board } from '../models/board';
+import { Cell } from '../models/cell';
 import { Game } from '../models/game';
 import { Ship } from '../models/ship';
 import { DatabaseService } from './database.service';
@@ -83,5 +84,10 @@ export class BoardService {
 
     this._selected.next(ship);
     this._previous = ship;
+  }
+
+  handleShot(board: Board, row: number, col: number) {
+    let cell = board.getCell(row, col);
+    cell.shot = true;
   }
 }
