@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { combineLatest, Observable, ReplaySubject } from 'rxjs';
-import { first, map, switchMap } from 'rxjs/operators';
+import { first, map, switchMap, take } from 'rxjs/operators';
 import { Ship } from '../models/ship';
 import { DatabaseService } from './database.service';
 
@@ -9,23 +9,18 @@ import { DatabaseService } from './database.service';
   providedIn: 'root'
 })
 export class GameService {
-  private _currentShips: Ship[];
-  currentShips$: ReplaySubject<Ship[]> = new ReplaySubject<Ship[]>(1);
-
-  private _otherShips: Ship[];
-  otherShips$: ReplaySubject<Ship[]> = new ReplaySubject<Ship[]>(1);
+  private currentShips: ReplaySubject<Ship[]> = new ReplaySubject<Ship[]>(1);
+  private otherShips: ReplaySubject<Ship[]> = new ReplaySubject<Ship[]>(1);
 
   constructor(private db: DatabaseService) {
-    this.getCurrentShips().subscribe(
-      (ships) => {
-        this._currentShips = ships;
-        this.currentShips$.next(ships);
-      }
-    )
-    
+    this.setCurrentShips()
   }
 
   getCurrentShips(): Observable<Ship[]> {
+    return this.currentShips.asObservable().pipe(take(1));
+  }
+
+  setCurrentShips(): void {
 
     const currentShip$ = ([game, playerKey]) => {
       return this.db.getGameShips(game.key).pipe(
@@ -34,12 +29,17 @@ export class GameService {
       )
     }
 
-    return combineLatest([
+    combineLatest([
       this.db.getCurrentGame(),
       this.db.getPlayerKey()
     ]).pipe(
       switchMap(currentShip$)
-    );
+    ).subscribe(
+      (ships) => {
+        this.currentShips.next(ships);
+      }
+    )
+
   }
 
 }

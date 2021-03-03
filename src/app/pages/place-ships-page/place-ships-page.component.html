@@ -1,12 +1,14 @@
 
 <div class="placement-panel">
     <app-ships-view
-        [ships]="ships | async"
+        *ngIf="ships"
+        [ships]="ships"
     ></app-ships-view>
     
     <app-board-view 
         (contextmenu)="$event.preventDefault()"
-        [board]="board | async"
+        *ngIf="board"
+        [board]="board"
     ></app-board-view>
 </div>
 

@@ -15,9 +15,12 @@ import { GameService } from 'src/app/services/game.service';
   styleUrls: ['./place-ships-page.component.css']
 })
 export class PlaceShipsPageComponent implements OnInit {
-  board: Observable<Board>;
-  ships: Observable<Ship[]>;
-  donePlacing: boolean = false;
+  board: Board;
+  ships: Ship[];
+
+  get donePlacing(): boolean {
+    return this.ships.every(s => s.placed);
+  }
 
   constructor(
     private router: Router, 
@@ -34,18 +37,14 @@ export class PlaceShipsPageComponent implements OnInit {
 
       if (connected && !ready) {
 
-        this.ships = this.gs.getCurrentShips()
+        this.setShips();
 
-        this.board = this.bs.getBoard().pipe(
-          tap((board) => {
-            this.bs.loadCurrentShips(board);
-          })
-        );
+        this.setBoard();
 
       }
       
       if (connected && ready) {
-        this.startGame();
+        this.gotoGame();
       }
 
     }
@@ -55,7 +54,27 @@ export class PlaceShipsPageComponent implements OnInit {
     );
   }
 
+  setShips(): void {
+    this.gs.getCurrentShips().subscribe(
+      (ships) => { this.ships = ships }
+    )
+  }
+
+  setBoard(): void {
+    this.bs.getBoard().subscribe(
+      board => {
+        this.bs.loadCurrentShips(board);
+        this.board = board;
+      }
+    );
+  }
+
   startGame(): void {
+    this.db.setReady();
+    this.gotoGame();
+  }
+
+  gotoGame(): void {
     this.db.getCurrentGame().pipe(take(1))
       .subscribe(game => {
         this.router.navigate(["/play"], {queryParams: {'game': game.key}});
