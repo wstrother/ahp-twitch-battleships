@@ -20,7 +20,10 @@ export class Game extends DbItem {
         return this.player2 === "";
     }
     
-    constructor(public name?: string, public boardWidth?: number, public totalCells?: number) {
+    constructor(
+        public name?: string, 
+        public boardWidth?: number, 
+        public totalCells?: number) {
         super();
     }
 

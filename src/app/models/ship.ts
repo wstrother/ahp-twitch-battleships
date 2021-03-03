@@ -19,7 +19,10 @@ export class Ship extends DbItem {
         return this._ghost;
     }
     
-    constructor(public size: number, public gameKey: string, public playerKey: string) {
+    constructor(
+        public size?: number, 
+        public gameKey?: string, 
+        public playerKey?: string) {
         super();
     }
 

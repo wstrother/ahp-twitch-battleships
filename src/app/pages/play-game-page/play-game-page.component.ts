@@ -4,6 +4,7 @@ import { combineLatest } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Board } from 'src/app/models/board';
 import { Ship } from 'src/app/models/ship';
+import { Shot } from 'src/app/models/shot';
 import { BoardService } from 'src/app/services/board.service';
 import { DatabaseService, GameConnection } from 'src/app/services/database.service';
 import { GameService } from 'src/app/services/game.service';
@@ -34,8 +35,6 @@ export class PlayGamePageComponent implements OnInit {
 
       if (connected && ready) {
 
-        // this.setShips();
-
         this.setBoards();
 
       }
@@ -58,11 +57,23 @@ export class PlayGamePageComponent implements OnInit {
       this.bs.getBoard()
     ]).subscribe(
       (boards: Board[]) => {
+
         this.bs.loadCurrentShips(boards[0]);
         this.otherBoard = boards[0];
+        this.gs.getOtherShots().subscribe(
+          (shot: Shot) => {
+            this.bs.handleShot(boards[0], shot.row, shot.col);
+          }
+        );
 
         this.bs.loadOtherShips(boards[1]);
         this.playerBoard = boards[1];
+        this.gs.getCurrentShots().subscribe(
+          (shots: Shot[]) => {
+            shots.forEach(shot => this.bs.handleShot(boards[1], shot.row, shot.col));
+          }
+        );
+
       }
     );
 

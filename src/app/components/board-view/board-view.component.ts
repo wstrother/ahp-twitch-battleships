@@ -161,7 +161,7 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   clickToFire(event: any): void {
     let {row, col} = this.getCoordinates(event.x, event.y);
-    this.bs.handleShot(this.board, row, col);
+    this.bs.fireShot(this.board, row, col);
   }
 
   clickToMark(event: any): void {

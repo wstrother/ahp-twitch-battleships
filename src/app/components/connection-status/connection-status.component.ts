@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { DatabaseService, GameConnection } from 'src/app/services/database.service';
 import { ConnectionStatus, Game } from 'src/app/models/game';
 
@@ -76,6 +76,7 @@ export class ConnectionStatusComponent implements OnInit {
 
   getConnectionStatus(playerKey: string): Observable<ConnectionStatus> {
     return this.db.getCurrentGame().pipe(
+      take(1),
       map((game: Game) => {
         return game.getConnectionStatus(playerKey);
       })

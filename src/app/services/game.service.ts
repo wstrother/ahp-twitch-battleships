@@ -3,6 +3,7 @@ import { combineLatest, Observable, ReplaySubject } from 'rxjs';
 import { first, map, switchMap, take } from 'rxjs/operators';
 import { Game } from '../models/game';
 import { Ship } from '../models/ship';
+import { Shot } from '../models/shot';
 import { DatabaseService } from './database.service';
 
 
@@ -11,11 +12,61 @@ import { DatabaseService } from './database.service';
 })
 export class GameService {
   private currentShips: ReplaySubject<Ship[]> = new ReplaySubject<Ship[]>(1);
+  private _currentShots: Shot[] = [];
+  private currentShotList: ReplaySubject<Shot[]> = new ReplaySubject<Shot[]>(1);
+
   private otherShips: ReplaySubject<Ship[]> = new ReplaySubject<Ship[]>(1);
+  private _otherShots: Shot[] = [];
+  private otherNewShot: ReplaySubject<Shot> = new ReplaySubject<Shot>();
 
   constructor(private db: DatabaseService) {
     this.setCurrentShips();
     this.setOtherShips();
+    this.setShots();
+  }
+
+  setShots(): void {
+    console.log("setting up shots subscription...");
+
+    combineLatest([
+      this.db.getCurrentGame(),
+      this.db.getPlayerKey()
+    ]).pipe(take(1)).subscribe(
+      ([game, playerKey]) => {
+        this.db.getGameShots(game.key).subscribe(
+          (shots) => { this.filterShots(shots, playerKey); }
+        )
+      }
+    );
+  }
+
+  filterShots(shots: Shot[], playerKey: string): void {
+    console.log("filtering shots lists...");
+
+    const checkToAdd = (list: Shot[], shot: Shot) => {
+      if (list.every(s => !shot.check(s))) {list.push(shot)}
+    }
+
+    shots.forEach(shot => {
+      if (shot.playerKey === playerKey) {
+        checkToAdd(this._currentShots, shot);
+        this.currentShotList.next(this._currentShots);
+
+      } else {
+        checkToAdd(this._otherShots, shot);
+        this.otherNewShot.next(shot);
+      }
+    });
+
+    console.log(this._currentShots);
+  }
+
+  getOtherShots(): Observable<Shot> {
+    return this.otherNewShot.asObservable();
+  }
+
+  getCurrentShots(): Observable<Shot[]> {
+    return this.currentShotList.asObservable();
   }
 
   getCurrentShips(): Observable<Ship[]> {

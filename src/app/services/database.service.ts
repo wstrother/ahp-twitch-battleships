@@ -5,6 +5,7 @@ import { combineLatest, from, Observable, ReplaySubject } from 'rxjs';
 import { catchError, map, switchMap, take, tap } from 'rxjs/operators';
 import { Game } from '../models/game';
 import { Ship } from '../models/ship';
+import { Shot } from '../models/shot';
 
 
 class FullGameError extends Error {
@@ -40,11 +41,13 @@ export class DatabaseService {
   private shipsRef: AngularFireList<any>;
   private gamesRef: AngularFireList<any>;
   private playersRef: AngularFireList<any>;
+  private shotsRef: AngularFireList<any>;
 
   constructor(private af: AngularFireDatabase) {
     this.gamesRef = this.af.list("/games");
     this.playersRef = this.af.list("/players");
     this.shipsRef = this.af.list("/ships");
+    this.shotsRef = this.af.list("/shots");
 
     this.checkPlayer();
   }
@@ -131,13 +134,27 @@ export class DatabaseService {
 
   getGameShips(gameKey: string): Observable<Ship[]> {
 
-    const gameFilter = (ref: DatabaseReference) => ref.orderByChild("gameKey").equalTo(gameKey);
+    const gameFilter = (ref: DatabaseReference) => ref
+      .orderByChild("gameKey").equalTo(gameKey);
 
     return this.af.list("/ships", gameFilter).snapshotChanges()
       .pipe(map(
         ships => ships.map(s => {
-          let sh = Ship.getFromSnapshot(s)
-          return sh
+          return Ship.getFromSnapshot(s)
+        })
+      )
+    );
+  }
+
+  getGameShots(gameKey: string): Observable<Shot[]> {
+
+    const gameFilter = (ref: DatabaseReference) => ref
+      .orderByChild("gameKey").equalTo(gameKey);
+    
+    return this.af.list("/shots", gameFilter).snapshotChanges()
+      .pipe(map(
+        shots => shots.map(s => {
+          return Shot.getFromSnapshot(s)
         })
       )
     );
@@ -218,6 +235,18 @@ export class DatabaseService {
 
   updateShip(ship: Ship, data: any): void {
     ship.update(this.shipsRef, data);
+  }
+
+  fireShot(row: number, col: number): void {
+    combineLatest([
+      this.getCurrentGame(),
+      this.getPlayerKey()
+    ]).pipe(take(1)).subscribe(
+      ([game, playerKey]) => {
+        let shot = new Shot(row, col, game.key, playerKey);
+        shot.create(this.shotsRef);
+      }
+    );
   }
 
 }

@@ -86,6 +86,12 @@ export class BoardService {
     this._previous = ship;
   }
 
+  fireShot(board: Board, row: number, col: number) {
+    console.log("Firing shot into DB");
+    this.db.fireShot(row, col);
+    this.handleShot(board, row, col);
+  }
+
   handleShot(board: Board, row: number, col: number) {
     let cell = board.getCell(row, col);
     cell.shot = true;
