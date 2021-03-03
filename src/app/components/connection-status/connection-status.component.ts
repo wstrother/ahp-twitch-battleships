@@ -20,8 +20,10 @@ export class ConnectionStatusComponent implements OnInit {
   ngOnInit(): void {
     this.getGameParam().subscribe(
       (gameKey) => {
-        this.db.setGameKey(gameKey);
-        this.db.connectToGame();
+        if (gameKey) {
+          this.db.setGameKey(gameKey);
+          this.db.connectToGame();
+        }
       }
     );
 
@@ -49,9 +51,8 @@ export class ConnectionStatusComponent implements OnInit {
 
   getGameParam(): Observable<string> {
     return this.route.queryParams.pipe(
-      map(params => params["game"]),
-      filter(game => game)
-    )
+      map(params => params["game"])
+    );
   }
 
   getConnectionStatus(playerKey: string): Observable<ConnectionStatus> {

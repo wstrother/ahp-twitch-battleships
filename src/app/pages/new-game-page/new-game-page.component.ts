@@ -14,6 +14,9 @@ export class NewGamePageComponent implements OnInit {
   constructor(private router: Router, private db: DatabaseService) { }
 
   ngOnInit(): void {
+    if (this.db.gameLoaded) {
+      window.location.reload();
+    }
   }
 
   makeGame(): void {

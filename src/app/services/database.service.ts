@@ -34,6 +34,8 @@ export class DatabaseService {
   private playerKey: ReplaySubject<string> = new ReplaySubject(1);
   private gameKey: ReplaySubject<string> = new ReplaySubject(1);
   private playerConnected: ReplaySubject<boolean> = new ReplaySubject(1);
+
+  gameLoaded: boolean = false;
   
   private shipsRef: AngularFireList<any>;
   private gamesRef: AngularFireList<any>;
@@ -123,7 +125,6 @@ export class DatabaseService {
       this.getConnection(),
       this.getPlayerKey()
     ]).pipe(
-      take(1),
       map(getGameConnection)
     );
   }
@@ -143,6 +144,7 @@ export class DatabaseService {
   }
 
   setGameKey(gameKey: string): void {
+    this.gameLoaded = true;
     this.gameKey.next(gameKey);
   }
 
@@ -152,9 +154,12 @@ export class DatabaseService {
       switchMap((playerKey: string) => {
 
         game.player1 = playerKey;
-        this.createShips(playerKey);
         
         return game.create(this.gamesRef);
+      }),
+      tap((game) => {
+        this.setGameKey(game.key);
+        this.createShips(game.player1);
       })
     );
   }

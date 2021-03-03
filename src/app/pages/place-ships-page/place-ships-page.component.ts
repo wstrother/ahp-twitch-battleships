@@ -3,8 +3,7 @@ import { Router } from '@angular/router';
 import { BoardService } from 'src/app/services/board.service';
 import { Board } from 'src/app/models/board';
 import { Ship } from 'src/app/models/ship';
-import { Observable } from 'rxjs';
-import { take, tap } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 import { DatabaseService, GameConnection } from 'src/app/services/database.service';
 import { GameService } from 'src/app/services/game.service';
 
@@ -30,7 +29,6 @@ export class PlaceShipsPageComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    
     const handleConnection = ({game, connected, playerKey}: GameConnection) => {
 
       let ready = game.getReady(playerKey);
