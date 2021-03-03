@@ -49,6 +49,8 @@ export class BoardService {
     if (this._previous) {
       let prev = this._previous;
       prev.selected = false;
+      prev.ghost.clear();
+
       if (prev.cells.length === prev.size) {
         prev.placed = true;
       }
@@ -67,6 +69,7 @@ export class BoardService {
 
     if (ship) {
       ship.selected = true;
+      ship.clear();
 
       // if ship is selected make sure placed is false in database
       this.db.updateShip(ship, {placed: false});

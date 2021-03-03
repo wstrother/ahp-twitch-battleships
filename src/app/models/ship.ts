@@ -9,6 +9,15 @@ export class Ship extends DbItem {
     selected: boolean = false;
     placed: boolean = false;
     direction: "x" | "y" = "x";
+    _ghost: Ghost;
+
+    get ghost(): Ghost {
+        if (!this._ghost) {
+            this._ghost = new Ghost(this);
+        }
+
+        return this._ghost;
+    }
     
     constructor(public size: number, public gameKey: string, public playerKey: string) {
         super();
@@ -47,15 +56,20 @@ export class Ship extends DbItem {
         this.row = row;
         this.col = col;
 
-        this.cells.forEach((c) => {
-            c.ship = null;
-        })
-        this.cells.length = 0;
+        this.clear();
 
         cells.forEach((c) => {
             c.ship = this;
             this.cells.push(c);
         });
+    }
+
+    clear(): void {
+        this.cells.forEach((c) => {
+            c.ship = null;
+        })
+
+        this.cells.length = 0;
     }
 
     toggleDirection(): void {
@@ -64,7 +78,41 @@ export class Ship extends DbItem {
         } else {
             this.direction = "x";
         }
+    }
+}
 
-        this.setPosition(this.row, this.col, this.cells);
+export class Ghost {
+    cells: Cell[] = [];
+
+    get ok(): boolean {
+        return this.cells.length === this.size;
+    }
+
+    constructor(public ship: Ship) {
+    }
+
+    get size(): number {
+        return this.ship.size;
+    }
+
+    get direction(): "x" | "y" {
+        return this.ship.direction;
+    }
+
+    setShadow(cells: Cell[]): void {
+        this.clear();
+
+        cells.forEach((c) => {
+            c.ghost = this;
+            this.cells.push(c);
+        });
+    }
+
+    clear(): void {
+        this.cells.forEach((c) => {
+            c.ghost = null;
+        })
+
+        this.cells.length = 0;
     }
 }

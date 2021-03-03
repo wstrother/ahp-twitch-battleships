@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { fromEvent, Subscription } from 'rxjs';
 import { Board } from 'src/app/models/board';
 import { Cell } from 'src/app/models/cell';
-import { Ship } from 'src/app/models/ship';
+import { Ghost, Ship } from 'src/app/models/ship';
 import { BoardService } from 'src/app/services/board.service';
 
 
@@ -51,15 +51,21 @@ export class BoardViewComponent implements OnInit {
     // to place the ship
     this.bs.selected$.subscribe((ship) => {
       this.selected = ship;
-
+      
       if (this.mouseMovement$) {
         this.mouseMovement$.unsubscribe();
       }
+      
+      if (ship !== null) {
+        let ghost = this.selected.ghost;
 
-      if (this.selected) {
+        if (ship.placed) {
+          this.board.setShadow(ghost, ship.row, ship.col);
+        }
+
         this.mouseMovement$ = fromEvent(this.el.nativeElement, 'mousemove').subscribe(
           (e) => {
-            this.placeShip(e, this.selected);
+            this.placeShadow(e, ghost);
           });
       }
     });
@@ -91,6 +97,12 @@ export class BoardViewComponent implements OnInit {
     }
   }
 
+  placeShadow(event: any, ghost: Ghost): void {
+    let {row, col} = this.getCoordinates(event.x, event.y);
+
+    this.board.setShadow(ghost, row, col);
+  }
+
   handleClick(event: any, cell: Cell) {
     if (this.gameStarted) {
       //
@@ -103,6 +115,8 @@ export class BoardViewComponent implements OnInit {
       if (event.type === "contextmenu") {
         cell.handleMark();
       }
+
+
     } else {
       //
       // handle click events if a ship is selected for placement currently...
@@ -110,13 +124,17 @@ export class BoardViewComponent implements OnInit {
       //    right-click => changes orientation of the ship
       if (this.selected) {
         if (event.type === "click") {
+          this.placeShip(event, this.selected);
           this.bs.selectShip(null);
           this.mouseMovement$.unsubscribe();
         }
+
         if (event.type === "contextmenu") {
           this.selected.toggleDirection();
-          this.placeShip(event, this.selected);
+          this.placeShadow(event, this.selected.ghost);
         }
+
+
       } else {
         //
         // handle click events during placement if a ship isn't currently selected...

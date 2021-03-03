@@ -19,7 +19,7 @@ export class PlaceShipsPageComponent implements OnInit {
   ships: Ship[];
 
   get donePlacing(): boolean {
-    return this.ships.every(s => s.placed);
+    return this.ships && this.ships.every(s => s.placed);
   }
 
   constructor(

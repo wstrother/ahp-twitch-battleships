@@ -19,6 +19,14 @@
     border: 2px solid gold;
 }
 
+.has-ghost-ok {
+    background-color: lightblue;
+}
+
+.has-ghost-not {
+    background-color: lightcoral;
+}
+
 .has-ship {
     background-color: blue;
 }

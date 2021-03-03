@@ -1,4 +1,4 @@
-import { Ship } from "./ship";
+import { Ghost, Ship } from "./ship";
 import { Cell } from "./cell";
 
 class ShipPlacementError extends Error {
@@ -24,26 +24,27 @@ export class Board {
         }
     }
 
-    getCell(row: number, col: number): Cell {
+    getCell(row: number, col: number): Cell | null {
         if (col > this.width - 1) {
-            throw new BoardError(`There is no Cell at row: ${row}, col: ${col}`);
+            return null;
         }
-        let cell = this.cells[(row * this.width) + col];
 
-        if (!cell) {
-            throw new BoardError(`There is no Cell at row: ${row}, col: ${col}`);
-        }
+        let cell = this.cells[(row * this.width) + col];
 
         return cell;
     }
 
-    setShipPosition(ship: Ship, row: number, col: number) {
+    setShipPosition(ship: Ship, row: number, col: number): void {
         let cells = [];
         let currentCell = null;
         let newPos = {row, col};
 
         for (let i = 0; i < ship.size; i++) {
             currentCell = this.getCell(row, col);
+
+            if (!currentCell) {
+                throw new BoardError(`There is no Cell at row: ${row}, col: ${col}`);
+            }
 
             if (currentCell.hasShip && currentCell.ship !== ship) {
                 throw new ShipPlacementError(`The Cell at row: ${row}, col: ${col} already has a Ship`);
@@ -61,5 +62,28 @@ export class Board {
         }
 
         ship.setPosition(newPos.row, newPos.col, cells);
+    }
+
+    setShadow(ghost: Ghost, row: number, col: number) {
+        let cells = [];
+        let currentCell = null;
+
+        for (let i = 0; i < ghost.size; i++) {
+            currentCell = this.getCell(row, col);
+
+            if (currentCell && !currentCell.hasShip) {
+                cells.push(currentCell);
+            }
+
+            if (ghost.direction === "x") {
+                col++;
+            }
+
+            if (ghost.direction === "y") {
+                row++;
+            }
+        }       
+        
+        ghost.setShadow(cells);
     }
 }

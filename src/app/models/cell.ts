@@ -1,9 +1,10 @@
-import { Ship } from "./ship";
+import { Ghost, Ship } from "./ship";
 
 export class Cell {
     marked: boolean = false;
     shot: boolean = false;
     ship: Ship | null = null;
+    ghost: Ghost | null = null;
     
     get hasShip(): boolean {
         if (this.ship) {
