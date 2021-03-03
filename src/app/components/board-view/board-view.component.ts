@@ -142,7 +142,6 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   setUpFiring(): void {
     
-
     // this.click$ = setEventMethod('click')
   }
 

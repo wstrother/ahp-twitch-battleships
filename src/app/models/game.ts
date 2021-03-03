@@ -35,7 +35,7 @@ export class Game extends DbItem {
         return p1 ? 1 : 2;
     }
 
-    getConnectionStatus(key: string): any {
+    getConnectionStatus(key: string): ConnectionStatus {
         const n = this.getPlayerNum(key);
 
         const getStatus = (k: string, ready: boolean) => {
@@ -50,12 +50,24 @@ export class Game extends DbItem {
         return status[n === 1 ? 1 : 0]
     }
 
+    otherKey(key: string): string | null {
+        const n = this.getPlayerNum(key);
+
+        return [
+            this.player1, this.player2
+        ][n === 1 ? 1 : 0]
+    }
+
     getReady(key: string): boolean {
         const n = this.getPlayerNum(key);
         const ready = [
             this.p1ready, this.p2ready
         ]
         return ready[n === 1 ? 0 : 1]
+    }
+
+    otherReady(key: string): boolean {
+        return this.getReady(this.otherKey(key));
     }
 
     setReady(key: string, collection: AngularFireList<Game>): void {

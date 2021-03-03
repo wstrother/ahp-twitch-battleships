@@ -1,1 +1,13 @@
-<p>play-game-page works!</p>
+<div class="game-panel">
+    <app-board-view class="player-board"
+        [board]="playerBoard"
+        [placeable]="false"
+        [fireable]="true"
+    ></app-board-view>
+    
+    <app-board-view class="other-board"
+        [board]="otherBoard"
+        [placeable]="false"
+        [fireable]="false"
+    ></app-board-view>
+</div>

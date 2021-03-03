@@ -1,0 +1,10 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.game-panel {
+    display: flex;
+    justify-content: space-evenly;
+}

@@ -37,6 +37,12 @@ export class BoardService {
     );
   }
 
+  loadOtherShips(board: Board): void {
+    this.gs.getOtherShips().subscribe(
+      (ships: Ship[]) => {this.placeShips(board, ships)}
+    )
+  }
+
   placeShips(board: Board, ships: Ship[]): void {
     ships.forEach(ship => {
       if (ship.placed) {

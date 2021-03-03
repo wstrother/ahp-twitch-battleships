@@ -4,6 +4,10 @@
     </h3>
 </div>
 
+<div class="error-panel" *ngIf="errorMessage">
+    {{ errorMessage }}
+</div>
+
 <div class="status-panel" *ngIf="(status$ | async) as status">
     <span>
         Connected as Player {{ status.playerNum }}.
