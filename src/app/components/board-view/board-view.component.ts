@@ -39,9 +39,7 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() fireable: boolean = false;
 
   private selectedSub: Subscription;
-  private rightClick$: Subscription;
-  private mouseMovement$: Subscription;
-  private click$: Subscription;
+  private eventSubs: Subscription[] = [];
 
   @ViewChild('boardElement') el: any;
 
@@ -68,13 +66,10 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   cancelEventSubs(): void {
-    [
-      this.mouseMovement$,
-      this.rightClick$,
-      this.click$
-    ].forEach(sub => {
-      if (sub) { sub.unsubscribe(); }
+    this.eventSubs.forEach(sub => {
+      sub.unsubscribe();
     });
+    this.eventSubs.length = 0;
   }
 
   // get a set of coordinates {row: number, col: number} for a cell
@@ -109,12 +104,14 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
     this.board.setShadow(ghost, row, col);
   }
 
+  setEventMethod(name: string, method) {
+    const getEvent = (name: string) => fromEvent(this.el.nativeElement, name);
+
+    this.eventSubs.push(getEvent(name).subscribe(method));
+  }
+
   setUpPlacement(): void {
-    this.click$ = fromEvent(this.el.nativeElement, 'click')
-      .subscribe((e) => { 
-        this.clickToSelectShip(e); 
-      }
-    );
+    this.setEventMethod('click', (e: any) => this.clickToSelectShip(e));
 
     this.selectedSub = this.bs.selected$.subscribe(
       (ship) => {      
@@ -123,29 +120,30 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
         if (ship !== null) {
           let ghost = ship.ghost;
 
-          this.mouseMovement$ = fromEvent(this.el.nativeElement, 'mousemove')
-            .subscribe((e) => { this.placeShadow(e, ghost); }
+          this.setEventMethod(
+            'mousemove', (e: any) => this.placeShadow(e, ghost)
           );
-          
-          this.rightClick$ = fromEvent(this.el.nativeElement, 'contextmenu')
-            .subscribe((e) => { this.toggleSelectedDirection(e, ship); }
+          this.setEventMethod(
+            'contextmenu', (e: any) => this.toggleSelectedDirection(e, ship)
           );
-
-          this.click$ = fromEvent(this.el.nativeElement, 'click')
-            .subscribe((e) => { this.placeSelectedShip(e, ship); }
+          this.setEventMethod(
+            'click', (e: any) => this.placeSelectedShip(e, ship)
           );
 
         } else {
-
-          this.click$ = fromEvent(this.el.nativeElement, 'click')
-            .subscribe((e) => { 
-              this.clickToSelectShip(e); 
-            }
+          this.setEventMethod(
+            'click', (e: any) => this.clickToSelectShip(e)
           );
         }
 
       }
     );
+  }
+
+  setUpFiring(): void {
+    
+
+    // this.click$ = setEventMethod('click')
   }
 
   placeSelectedShip(event: any, ship: Ship): void {
