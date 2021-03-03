@@ -1,7 +1,6 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { fromEvent, Subscription } from 'rxjs';
 import { Board } from 'src/app/models/board';
-import { Cell } from 'src/app/models/cell';
 import { Ghost, Ship } from 'src/app/models/ship';
 import { BoardService } from 'src/app/services/board.service';
 
@@ -30,13 +29,19 @@ class boundingBox {
   templateUrl: './board-view.component.html',
   styleUrls: ['./board-view.component.css']
 })
-export class BoardViewComponent implements OnInit {
+export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() board: Board;
+
   showShips: boolean = true;
   gameStarted: boolean = false;
-  selected: Ship | null = null;
+  
+  @Input() placeable: boolean = true;
+  @Input() fireable: boolean = false;
 
+  private selectedSub: Subscription;
+  private rightClick$: Subscription;
   private mouseMovement$: Subscription;
+  private click$: Subscription;
 
   @ViewChild('boardElement') el: any;
 
@@ -47,27 +52,28 @@ export class BoardViewComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // subscribe to boardService to monitor selected ship and then watch mousemovement
-    // to place the ship
-    this.bs.selected$.subscribe((ship) => {
-      this.selected = ship;
-      
-      if (this.mouseMovement$) {
-        this.mouseMovement$.unsubscribe();
-      }
-      
-      if (ship !== null) {
-        let ghost = this.selected.ghost;
+  }
 
-        if (ship.placed) {
-          this.board.setShadow(ghost, ship.row, ship.col);
-        }
+  ngAfterViewInit(): void {
+    if (this.placeable) {
+      this.setUpPlacement();
+    }
+  }
 
-        this.mouseMovement$ = fromEvent(this.el.nativeElement, 'mousemove').subscribe(
-          (e) => {
-            this.placeShadow(e, ghost);
-          });
-      }
+  ngOnDestroy(): void {
+    if (this.selectedSub) {
+      this.selectedSub.unsubscribe();
+    }
+    this.cancelEventSubs();
+  }
+
+  cancelEventSubs(): void {
+    [
+      this.mouseMovement$,
+      this.rightClick$,
+      this.click$
+    ].forEach(sub => {
+      if (sub) { sub.unsubscribe(); }
     });
   }
 
@@ -103,57 +109,64 @@ export class BoardViewComponent implements OnInit {
     this.board.setShadow(ghost, row, col);
   }
 
-  handleClick(event: any, cell: Cell) {
-    if (this.gameStarted) {
-      //
-      // handle click events once the game is active and shots can be fired...
-      //    left-click => sends a shot to boardService
-      //    right-click => marks the Cell 
-      if (event.type === "click") {
-        // this.bs.handleShot(cell);
+  setUpPlacement(): void {
+    this.click$ = fromEvent(this.el.nativeElement, 'click')
+      .subscribe((e) => { 
+        this.clickToSelectShip(e); 
       }
-      if (event.type === "contextmenu") {
-        cell.handleMark();
-      }
+    );
 
+    this.selectedSub = this.bs.selected$.subscribe(
+      (ship) => {      
+        this.cancelEventSubs();
+        
+        if (ship !== null) {
+          let ghost = ship.ghost;
 
-    } else {
-      //
-      // handle click events if a ship is selected for placement currently...
-      //    left-click => unselects the ship leaving current placement (or none)
-      //    right-click => changes orientation of the ship
-      if (this.selected) {
-        if (event.type === "click") {
-          this.placeShip(event, this.selected);
-          this.bs.selectShip(null);
-          this.mouseMovement$.unsubscribe();
+          this.mouseMovement$ = fromEvent(this.el.nativeElement, 'mousemove')
+            .subscribe((e) => { this.placeShadow(e, ghost); }
+          );
+          
+          this.rightClick$ = fromEvent(this.el.nativeElement, 'contextmenu')
+            .subscribe((e) => { this.toggleSelectedDirection(e, ship); }
+          );
+
+          this.click$ = fromEvent(this.el.nativeElement, 'click')
+            .subscribe((e) => { this.placeSelectedShip(e, ship); }
+          );
+
+        } else {
+
+          this.click$ = fromEvent(this.el.nativeElement, 'click')
+            .subscribe((e) => { 
+              this.clickToSelectShip(e); 
+            }
+          );
         }
 
-        if (event.type === "contextmenu") {
-          this.selected.toggleDirection();
-          this.placeShadow(event, this.selected.ghost);
-        }
-
-
-      } else {
-        //
-        // handle click events during placement if a ship isn't currently selected...
-        //  left-click => select the ship at that cell if it exists
-        if (event.type === "click") {
-          if (cell.hasShip) {
-            this.bs.selectShip(cell.ship);
-          }
-        }
       }
+    );
+  }
+
+  placeSelectedShip(event: any, ship: Ship): void {
+    this.placeShip(event, ship);
+    this.bs.selectShip(null);
+  }
+
+  toggleSelectedDirection(event: any, ship: Ship): void {
+    ship.toggleDirection();
+    this.placeShadow(event, ship.ghost);
+  }
+
+  clickToSelectShip(event: any): void {
+    let {row, col} = this.getCoordinates(event.x, event.y);
+    let cell = this.board.getCell(row, col);
+
+    if (cell.ship) {
+      let ship = cell.ship;
+      this.bs.selectShip(ship);
+      this.board.setShadow(ship.ghost, ship.row, ship.col);
     }
   }
 
-  // UI hooks
-  startGame(): void {
-    this.gameStarted = true;
-  }
-
-  toggleShips(): void {
-    this.showShips = !this.showShips;
-  }
 }
