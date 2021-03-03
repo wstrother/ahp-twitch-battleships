@@ -14,7 +14,7 @@ export class Game extends DbItem {
     p2ready: boolean = false;
     
     key: string;
-    shipArgs: number[];
+    shipArgs: number[] = [5, 4, 3, 3, 2];
 
     get p2open(): boolean {
         return this.player2 === "";

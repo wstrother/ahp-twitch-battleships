@@ -54,8 +54,6 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    console.log(this.el);
-
     if (this.placeable) {
       this.setUpPlacement();
     }

@@ -1,27 +1,34 @@
-<div class="title">
-    <h3>
+<div class="title mat-title animate__animated animate__fadeIn">
         {{ title }}
-    </h3>
+</div> 
+
+<div class="error-panel animate__animated animate__pulse" *ngIf="errorMessage">
+    <span class="animate__animated animate__fadeIn">
+        {{ errorMessage }}
+    </span>
 </div>
 
-<div class="error-panel" *ngIf="errorMessage">
-    {{ errorMessage }}
-</div>
-
-<div class="status-panel" *ngIf="(status$ | async) as status">
-    <span>
-        Connected as Player {{ status.playerNum }}.
+<div class="status-panel" *ngIf="playerNum">
+    <span class="animate__animated animate__fadeIn">
+        Connected as Player {{ playerNum }}.
     </span>
 
-    <span *ngIf="!status.otherConnected">
-        Waiting for opponent...
+    <span 
+        *ngIf="otherStage === 1"
+        class="animate__animated animate__fadeIn">
+        Waiting for opponent to connect...
     </span>
 
-    <span *ngIf="status.otherConnected && !status.otherReady">
+    <span 
+        *ngIf="otherStage === 2"
+        class="animate__animated animate__fadeIn special">
         Opponent is connected!
     </span>
 
-    <span *ngIf="status.otherReady">
+    <span 
+        *ngIf="otherStage === 3"
+        class="animate__animated animate__fadeIn special">
         Opponent is ready to play!
     </span>
+
 </div>

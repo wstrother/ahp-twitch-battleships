@@ -48,7 +48,8 @@ export class PlaceShipsPageComponent implements OnInit {
     }
 
     this.db.onGameConnection().subscribe(
-        handleConnection
+        handleConnection,
+        (err) => {console.log(err.name)}
     );
   }
 

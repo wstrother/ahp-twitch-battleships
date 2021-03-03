@@ -15,16 +15,17 @@ export class NewGamePageComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.db.gameLoaded) {
-      window.location.reload();
+      window.location.reload(); 
     }
   }
 
   makeGame(): void {
+    this.numbersOnly();
+
     // passes form data to the database to create a new game
     // and returns a promise to get the gameKey
     // use the gameKey when returned to navigate to the '/place/
     // page with gameKey as 'game' parameter
-    this.game.shipArgs = [5, 4, 3, 3, 2];
 
     this.db.createGame(this.game).subscribe(
       () => {
@@ -34,5 +35,21 @@ export class NewGamePageComponent implements OnInit {
     // TODO:
     // add .catch later to provide front end error handling to the
     // html template
+  }
+
+  numbersOnly(): void {
+    let wStr: string = this.game.boardWidth + "";
+    let cStr: string = this.game.totalCells + "";
+
+    const toNum = (s: string, min: number, max: number): number => {
+      let num = parseInt(s.replace(/\D/g, ""));
+      if (num < min) {num = min}
+      if (num > max) {num = max}
+
+      return num;
+    }
+
+    this.game.boardWidth = toNum(wStr, 10, 30);
+    this.game.totalCells = toNum(cStr, 50, 900);
   }
 }

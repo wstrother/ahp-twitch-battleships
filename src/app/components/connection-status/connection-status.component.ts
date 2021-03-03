@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { DatabaseService, GameConnection } from 'src/app/services/database.service';
 import { ConnectionStatus, Game } from 'src/app/models/game';
 
@@ -11,9 +11,11 @@ import { ConnectionStatus, Game } from 'src/app/models/game';
   styleUrls: ['./connection-status.component.css']
 })
 export class ConnectionStatusComponent implements OnInit {
-  status$: Observable<ConnectionStatus>;
-  title: string = "Welcome to AHP's Battleships App";
+  title: string;
+
   errorMessage: string;
+  playerNum: number;
+  otherStage: number;
 
   constructor(private db: DatabaseService, private route: ActivatedRoute) { }
 
@@ -23,6 +25,8 @@ export class ConnectionStatusComponent implements OnInit {
         if (gameKey) {
           this.db.setGameKey(gameKey);
           this.db.connectToGame();
+        } else {
+          this.title = "Welcome to AHP's Battleships App";
         }
       }
     );
@@ -39,7 +43,22 @@ export class ConnectionStatusComponent implements OnInit {
     )  => {
       if (connected) {
         this.title = game.name;
-        this.status$ = this.getConnectionStatus(playerKey)
+        this.getConnectionStatus(playerKey).subscribe(
+          (status: ConnectionStatus) => {
+            this.playerNum = status.playerNum
+
+            if (!status.otherConnected) { 
+              this.otherStage = 1
+            }
+            if (status.otherConnected && !status.otherReady) {
+              this.otherStage = 2;
+            }
+            if (status.otherReady) {
+              this.otherStage = 3;
+            }
+
+          }
+        )
       }
     }
 
