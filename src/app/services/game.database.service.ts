@@ -6,7 +6,6 @@ import { DatabaseReference } from '@angular/fire/database/interfaces';
 import { Game } from '../models/game';
 import { Ship } from '../models/ship';
 
-let SHIPS_CREATED: boolean = false;
 
 class FullGameError extends Error {
   constructor() {
@@ -100,11 +99,6 @@ export class GameDatabaseService {
         // filter to ships for the current player
         map(ships => ships.filter(s => s.playerKey === playerKey)),
         
-        // if no ships are found, create ships for this game
-        tap(ships => {
-          if (ships.length === 0 && !SHIPS_CREATED) {this.createShips(game, playerKey)}
-        }),
-        
         // only emit the list of ships once all the ships for the
         // game have been created
         filter(ships => ships.length === game.shipArgs.length)
@@ -176,14 +170,11 @@ export class GameDatabaseService {
       switchMap((playerKey: string) => {
 
         game.player1 = playerKey;
+        this.createShips(playerKey);
+        
         return game.create(this.gamesRef);
-
       })
     );
-  }
-
-  updateGame(game: Game, data: any): void {
-    game.update(this.gamesRef, data);
   }
 
   setCurrentGame(gameKey: string): void {
@@ -202,6 +193,7 @@ export class GameDatabaseService {
 
         if (game.p2open && playerNum === 2) {
           game.update(this.gamesRef, {player2: playerKey});
+          this.createShips(playerKey);
         }
 
         if (playerNum) {
@@ -226,16 +218,19 @@ export class GameDatabaseService {
     )
   }
 
-  createShips(game: Game, playerKey: string): void {
-    SHIPS_CREATED = true;
-    
-    game.shipArgs.forEach(
-      (n) => {
-        let s = new Ship(n, game.key, playerKey);
-        s.create(this.shipsRef);
-      }
-    );
-
+  createShips(playerKey: string): void {
+    const makeShips = (game: Game) => {
+      game.shipArgs.forEach(
+        (n) => {
+          let s = new Ship(n, game.key, playerKey);
+          s.create(this.shipsRef);
+        }
+        );
+    }
+      
+      this.getCurrentGame().pipe(
+        take(1)
+      ).subscribe(makeShips);
   }
 
   updateShip(ship: Ship, data: any): void {
