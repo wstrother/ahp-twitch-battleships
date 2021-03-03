@@ -6,6 +6,7 @@ import { Ship } from 'src/app/models/ship';
 import { take } from 'rxjs/operators';
 import { DatabaseService, GameConnection } from 'src/app/services/database.service';
 import { GameService } from 'src/app/services/game.service';
+import { MatDialog } from '@angular/material/dialog';
 
 
 @Component({
@@ -25,7 +26,8 @@ export class PlaceShipsPageComponent implements OnInit {
     private router: Router, 
     private db: DatabaseService, 
     private bs: BoardService,
-    private gs: GameService
+    private gs: GameService,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -50,6 +52,16 @@ export class PlaceShipsPageComponent implements OnInit {
     this.db.onGameConnection().subscribe(
         handleConnection,
         (err) => {console.log(err.name)}
+    );
+  }
+
+  openDialog(): void {
+    let dialogRef = this.dialog.open(StartGameDialogComponent);
+
+    dialogRef.afterClosed().subscribe(
+      (result: any) => {
+        if (result) { this.startGame(); }
+      }
     );
   }
 
@@ -80,3 +92,14 @@ export class PlaceShipsPageComponent implements OnInit {
       });
   }
 }
+
+@Component({
+  selector: 'app-start-game-dialog',
+  template: `
+  <mat-dialog-content>Confirm Start Game?</mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Confirm</button>
+  </mat-dialog-actions>`
+})
+export class StartGameDialogComponent {}

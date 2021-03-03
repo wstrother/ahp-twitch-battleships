@@ -1,7 +1,12 @@
-:host {
+/* :host {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
+} */
+
+.placement-form {
+    display: flex;
+    flex-direction: column;
 }
 
 .placement-panel {
@@ -9,13 +14,11 @@
     justify-content: space-evenly;
 }
 
-.btn {
-    border: 1px solid black;
-    margin: 1rem;
-    background-color: grey;
-    padding: 5px;
-}
+/* .placement-panel>* {
+    width: 50%;
+} */
 
-.btn:active {
-    transform: translate(2px, 2px);
+button {
+    background-color: rgb(202, 202, 202);
+    color: rgba(0, 0, 0, 0.6);
 }

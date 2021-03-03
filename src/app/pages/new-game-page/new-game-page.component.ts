@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Game } from 'src/app/models/game';
 import { DatabaseService } from 'src/app/services/database.service';
@@ -11,12 +12,26 @@ import { DatabaseService } from 'src/app/services/database.service';
 export class NewGamePageComponent implements OnInit {
   game: Game = new Game("New Game", 10, 100);
   
-  constructor(private router: Router, private db: DatabaseService) { }
+  constructor(
+    private router: Router, 
+    private db: DatabaseService,
+    private dialog: MatDialog
+  ) { }
 
   ngOnInit(): void {
     if (this.db.gameLoaded) {
       window.location.reload(); 
     }
+  }
+
+  openDialog(): void {
+    let dialogRef = this.dialog.open(NewGameDialogComponent);
+
+    dialogRef.afterClosed().subscribe(
+      (result: any) => {
+        if (result) { this.makeGame(); }
+      }
+    );
   }
 
   makeGame(): void {
@@ -53,3 +68,15 @@ export class NewGamePageComponent implements OnInit {
     this.game.totalCells = toNum(cStr, 50, 900);
   }
 }
+
+
+@Component({
+  selector: 'app-new-game-dialog',
+  template: `
+  <mat-dialog-content>Confirm New Game?</mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Confirm</button>
+  </mat-dialog-actions>`
+})
+export class NewGameDialogComponent {}

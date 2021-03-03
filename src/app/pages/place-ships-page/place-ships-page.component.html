@@ -1,20 +1,22 @@
+<h1>Place Your Ships</h1>
 
-<div class="placement-panel">
-    <app-ships-view
+<div class="placement-form">
+
+    <div class="placement-panel">
+        <app-ships-view
         *ngIf="ships"
         [ships]="ships"
-    ></app-ships-view>
-    
-    <app-board-view 
+        ></app-ships-view>
+        
+        <app-board-view 
         (contextmenu)="$event.preventDefault()"
         *ngIf="board"
         [board]="board"
         [placeable]="true"
-    ></app-board-view>
-</div>
-
-<div class="ui-panel">
-    <div class="btn" *ngIf="donePlacing" (click)="startGame()">
-        Start Game!
+        ></app-board-view>
     </div>
+    
+    <button mat-button *ngIf="donePlacing" (click)="openDialog()">
+        Start Game!
+    </button>
 </div>
