@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { DatabaseService } from 'src/app/database.service';
 import { Game } from 'src/app/models/game';
+import { DatabaseService } from 'src/app/services/database.service';
 
 @Component({
   selector: 'app-new-game-page',

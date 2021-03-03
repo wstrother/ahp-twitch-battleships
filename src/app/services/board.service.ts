@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import { DatabaseService } from '../database.service';
-import { GameService } from '../game.service';
 import { Board } from '../models/board';
 import { Game } from '../models/game';
 import { Ship } from '../models/ship';
+import { DatabaseService } from './database.service';
+import { GameService } from './game.service';
 
 
 @Injectable({

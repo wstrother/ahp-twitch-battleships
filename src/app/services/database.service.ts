@@ -3,8 +3,8 @@ import { AngularFireDatabase } from '@angular/fire/database';
 import { AngularFireList, DatabaseReference } from '@angular/fire/database/interfaces';
 import { combineLatest, from, Observable, ReplaySubject } from 'rxjs';
 import { catchError, map, switchMap, take, tap } from 'rxjs/operators';
-import { Game } from './models/game';
-import { Ship } from './models/ship';
+import { Game } from '../models/game';
+import { Ship } from '../models/ship';
 
 
 class FullGameError extends Error {

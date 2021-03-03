@@ -5,8 +5,8 @@ import { Board } from 'src/app/models/board';
 import { Ship } from 'src/app/models/ship';
 import { Observable } from 'rxjs';
 import { take, tap } from 'rxjs/operators';
-import { DatabaseService, GameConnection } from 'src/app/database.service';
-import { GameService } from 'src/app/game.service';
+import { DatabaseService, GameConnection } from 'src/app/services/database.service';
+import { GameService } from 'src/app/services/game.service';
 
 
 @Component({
