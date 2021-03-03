@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
+import { DatabaseService, GameConnection } from 'src/app/database.service';
 import { ConnectionStatus, Game } from 'src/app/models/game';
-import { GameConnection, GameDatabaseService } from 'src/app/services/game.database.service';
 
 @Component({
   selector: 'app-connection-status',
@@ -15,13 +15,13 @@ export class ConnectionStatusComponent implements OnInit {
   title: string = "Welcome to AHP's Battleships App";
   errorMessage: string;
 
-  constructor(private db: GameDatabaseService, private route: ActivatedRoute) { }
+  constructor(private db: DatabaseService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.getGameParam().subscribe(
       (gameKey) => {
-        this.db.setCurrentGame(gameKey);
-        this.db.connectPlayer();
+        this.db.setGameKey(gameKey);
+        this.db.connectToGame();
       }
     );
 

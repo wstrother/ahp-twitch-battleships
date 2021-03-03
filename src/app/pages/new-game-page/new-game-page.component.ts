@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { DatabaseService } from 'src/app/database.service';
 import { Game } from 'src/app/models/game';
-import { GameDatabaseService } from 'src/app/services/game.database.service';
 
 @Component({
   selector: 'app-new-game-page',
@@ -11,7 +11,7 @@ import { GameDatabaseService } from 'src/app/services/game.database.service';
 export class NewGamePageComponent implements OnInit {
   game: Game = new Game("New Game", 10, 100);
   
-  constructor(private router: Router, private db: GameDatabaseService) { }
+  constructor(private router: Router, private db: DatabaseService) { }
 
   ngOnInit(): void {
   }

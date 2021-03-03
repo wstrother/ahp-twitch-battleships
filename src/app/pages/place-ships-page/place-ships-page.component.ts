@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { GameConnection, GameDatabaseService } from 'src/app/services/game.database.service';
 import { BoardService } from 'src/app/services/board.service';
 import { Board } from 'src/app/models/board';
 import { Ship } from 'src/app/models/ship';
 import { Observable } from 'rxjs';
 import { take, tap } from 'rxjs/operators';
+import { DatabaseService, GameConnection } from 'src/app/database.service';
+import { GameService } from 'src/app/game.service';
 
 
 @Component({
@@ -19,7 +20,10 @@ export class PlaceShipsPageComponent implements OnInit {
   donePlacing: boolean = false;
 
   constructor(
-    private router: Router, private db: GameDatabaseService, private bs: BoardService
+    private router: Router, 
+    private db: DatabaseService, 
+    private bs: BoardService,
+    private gs: GameService
   ) { }
 
   ngOnInit(): void {
@@ -30,9 +34,7 @@ export class PlaceShipsPageComponent implements OnInit {
 
       if (connected && !ready) {
 
-        this.ships = this.db.getCurrentShips().pipe(
-          take(1)
-        );
+        this.ships = this.gs.getCurrentShips()
 
         this.board = this.bs.getBoard().pipe(
           tap((board) => {

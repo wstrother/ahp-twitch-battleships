@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { AngularFireDatabase, AngularFireList } from '@angular/fire/database';
-import { from, Observable, combineLatest, ReplaySubject } from 'rxjs';
-import { catchError, filter, map, switchMap, take, tap } from 'rxjs/operators';
-import { DatabaseReference } from '@angular/fire/database/interfaces';
-import { Game } from '../models/game';
-import { Ship } from '../models/ship';
+import { AngularFireDatabase } from '@angular/fire/database';
+import { AngularFireList, DatabaseReference } from '@angular/fire/database/interfaces';
+import { combineLatest, from, Observable, ReplaySubject } from 'rxjs';
+import { catchError, map, switchMap, take, tap } from 'rxjs/operators';
+import { Game } from './models/game';
+import { Ship } from './models/ship';
 
 
 class FullGameError extends Error {
@@ -30,7 +30,7 @@ export interface GameConnection {
 @Injectable({
   providedIn: 'root'
 })
-export class GameDatabaseService {
+export class DatabaseService {
   private playerKey: ReplaySubject<string> = new ReplaySubject(1);
   private gameKey: ReplaySubject<string> = new ReplaySubject(1);
   private playerConnected: ReplaySubject<boolean> = new ReplaySubject(1);
@@ -46,7 +46,44 @@ export class GameDatabaseService {
 
     this.checkPlayer();
   }
-  
+
+  checkPlayer(): void {
+
+    // helper function that sets localStorage 'playerKey' item
+    // and passes the same value to the playerKey subject
+    const updatePlayerKey = (key: string) => {
+      this.playerKey.next(key);
+      localStorage.setItem("playerKey", key);
+    }
+    
+    const playerKey = localStorage.getItem("playerKey");
+
+    // cast the document from the database as a boolean
+    const handlePlayer = (playerFound: boolean) => {
+      
+      // if the record is there then pass the current key
+      // to updatePlayerKey
+      if (playerFound) {updatePlayerKey(playerKey)}
+
+      // if not call createPlayer with updatePlayerKey
+      // as the subscription callback
+      else {this.createPlayer().subscribe(updatePlayerKey)}
+    }
+    
+    this.af.object(`players/${playerKey}`)
+      .valueChanges().pipe(take(1))
+      .subscribe(handlePlayer);
+  }
+
+  createPlayer(): Observable<string> {
+
+    return from(
+      this.playersRef.push({
+        time: Date.now()
+      }).then(r => r.key)
+    );
+  }
+
   getPlayerKey(): Observable<string> {
     return this.playerKey.asObservable();
   }
@@ -91,28 +128,6 @@ export class GameDatabaseService {
     );
   }
 
-  getCurrentShips(): Observable<Ship[]> {
-
-    const currentShip$ = ([game, playerKey]) => {
-      return this.getGameShips(game.key).pipe(
-
-        // filter to ships for the current player
-        map(ships => ships.filter(s => s.playerKey === playerKey)),
-        
-        // only emit the list of ships once all the ships for the
-        // game have been created
-        filter(ships => ships.length === game.shipArgs.length)
-      )
-    }
-
-    return combineLatest([
-      this.getCurrentGame(),
-      this.getPlayerKey()
-    ]).pipe(      // ([game, playerKey])
-      switchMap(currentShip$)
-    );
-  }
-
   getGameShips(gameKey: string): Observable<Ship[]> {
 
     const gameFilter = (ref: DatabaseReference) => ref.orderByChild("gameKey").equalTo(gameKey);
@@ -127,41 +142,8 @@ export class GameDatabaseService {
     );
   }
 
-  checkPlayer(): void {
-
-    // helper function that sets localStorage 'playerKey' item
-    // and passes the same value to the playerKey subject
-    const updatePlayerKey = (key: string) => {
-      this.playerKey.next(key);
-      localStorage.setItem("playerKey", key);
-    }
-    
-    const playerKey = localStorage.getItem("playerKey");
-
-    // cast the document from the database as a boolean
-    const handlePlayer = (playerFound: boolean) => {
-      
-      // if the record is there then pass the current key
-      // to updatePlayerKey
-      if (playerFound) {updatePlayerKey(playerKey)}
-
-      // if not call createPlayer with updatePlayerKey
-      // as the subscription callback
-      else {this.createPlayer().subscribe(updatePlayerKey)}
-    }
-    
-    this.af.object(`players/${playerKey}`)
-      .valueChanges().pipe(take(1))
-      .subscribe(handlePlayer);
-  }
-
-  createPlayer(): Observable<string> {
-
-    return from(
-      this.playersRef.push({
-        time: Date.now()
-      }).then(r => r.key)
-    );
+  setGameKey(gameKey: string): void {
+    this.gameKey.next(gameKey);
   }
 
   createGame(game: Game): Observable<Game> { 
@@ -177,11 +159,7 @@ export class GameDatabaseService {
     );
   }
 
-  setCurrentGame(gameKey: string): void {
-    this.gameKey.next(gameKey);
-  }
-
-  connectPlayer(): void {
+  connectToGame(): void {
 
     combineLatest([
       this.getPlayerKey(),
@@ -236,4 +214,5 @@ export class GameDatabaseService {
   updateShip(ship: Ship, data: any): void {
     ship.update(this.shipsRef, data);
   }
+
 }

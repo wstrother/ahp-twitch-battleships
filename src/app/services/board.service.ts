@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { map, take } from 'rxjs/operators';
+import { DatabaseService } from '../database.service';
+import { GameService } from '../game.service';
 import { Board } from '../models/board';
-import { Cell } from '../models/cell';
 import { Game } from '../models/game';
 import { Ship } from '../models/ship';
-import { GameDatabaseService } from './game.database.service';
 
 
 @Injectable({
@@ -18,7 +18,7 @@ export class BoardService {
 
   cellSize = 25;
 
-  constructor(private db: GameDatabaseService) {
+  constructor(private db: DatabaseService, private gs: GameService) {
     this.selected$ = this._selected.asObservable();
   }
 
@@ -32,7 +32,7 @@ export class BoardService {
   }
 
   loadCurrentShips(board: Board): void {
-    this.db.getCurrentShips().pipe(take(1)).subscribe(
+    this.gs.getCurrentShips().subscribe(
       (ships: Ship[]) => {this.placeShips(board, ships)}
     );
   }
