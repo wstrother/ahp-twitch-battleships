@@ -31,9 +31,7 @@ export class PlaceShipsPageComponent implements OnInit {
       if (connected && !ready) {
 
         this.ships = this.db.getCurrentShips().pipe(
-          tap((ships) => {
-            this.donePlacing = ships.every(s => s.placed);
-          })
+          take(1)
         );
 
         this.board = this.bs.getBoard().pipe(
