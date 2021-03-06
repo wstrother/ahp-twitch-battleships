@@ -4,7 +4,78 @@
     justify-content: space-evenly;
 }
 
-.game-panel {
+.boards-panel {
     display: flex;
     justify-content: space-evenly;
+}
+
+.game-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.shot-alert.alert-good {
+    animation: glow-good 1.5s 2;
+}
+
+.shot-alert.alert-good.alert-sink {
+    animation: sink-good 1.5s 2;
+}
+
+.shot-alert.alert-bad {
+    animation: glow-bad 1.5s 2
+}
+
+.shot-alert.alert-bad.alert-sink {
+    animation: sink-bad 1.5s 2;
+}
+
+@keyframes glow-good {
+    0% {
+        color: inherit;
+    }
+    50% {
+        color: rgba(187, 235, 187, 0.5);
+    }
+    100% {
+        color: inherit;
+    }
+}
+
+@keyframes sink-good {
+    0% {
+        color: inherit;
+    }
+    50% {
+        color: rgba(9, 253, 9, 0.9);
+    }
+    100% {
+        color: inherit;
+        text-shadow: none;
+    }
+}
+
+
+@keyframes glow-bad {
+    0% {
+        color: inherit;
+    }
+    50% {
+        color: rgba(235, 187, 187, 0.5);
+    }
+    100% {
+        color: inherit;
+    }
+}
+
+@keyframes sink-bad {
+    0% {
+        color: inherit;
+    }
+    50% {
+        color: rgba(247, 17, 17, 0.9);
+    }
+    100% {
+        color: inherit;
+    }
 }

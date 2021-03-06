@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MatSnackBar, MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { combineLatest, partition, Subject } from 'rxjs';
-import { last, take } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 import { Board } from 'src/app/models/board';
 import { Ship } from 'src/app/models/ship';
 import { Shot } from 'src/app/models/shot';
@@ -25,16 +26,17 @@ export class PlayGamePageComponent implements OnInit {
   private _otherShots: Shot[] = [];
 
   private currentShotsLoaded: boolean = false;
-  private currentAlerts: Subject<string> = new Subject();
+  private currentAlerts: Subject<ShotAlert> = new Subject();
   
   private otherShotsLoaded: boolean = false;
-  private otherAlerts: Subject<string> = new Subject();
+  private otherAlerts: Subject<ShotAlert> = new Subject();
 
   constructor(
     private router: Router, 
     private db: DatabaseService, 
     private bs: BoardService,
-    private gs: GameService
+    private gs: GameService,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -68,13 +70,20 @@ export class PlayGamePageComponent implements OnInit {
           )
 
           current.subscribe((sa: ShotAlert) => { 
-            this.currentAlerts.next(`YOU: ${sa.message}`); 
+            this.currentAlerts.next(sa); 
           });
           other.subscribe((sa: ShotAlert) => { 
-            this.otherAlerts.next(`OTHER: ${sa.message}`); 
+            this.otherAlerts.next(sa); 
           });
         }
       )
+  }
+
+  handleAlert(sa: ShotAlert, good: boolean=true): void {
+    this.snackBar.openFromComponent(ShotAlertComponent, {
+      duration: 3000,
+      data: {sa, good}
+    });
   }
 
   setBoards(): void {
@@ -93,6 +102,7 @@ export class PlayGamePageComponent implements OnInit {
 
         this.bs.loadCurrentShips(boards[0]);
         this.otherBoard = boards[0];
+
         this.gs.getOtherShots().subscribe(
           (shots: Shot[]) => { 
             shots.forEach(shot => {
@@ -100,7 +110,9 @@ export class PlayGamePageComponent implements OnInit {
             });
 
             if (!this.otherShotsLoaded) {
-              this.otherAlerts.subscribe(console.log);
+              this.otherAlerts.subscribe(
+                sa => { this.handleAlert(sa, false)}
+              );
             }
             this.otherShotsLoaded = true;
           }
@@ -117,7 +129,9 @@ export class PlayGamePageComponent implements OnInit {
             });
 
             if (!this.currentShotsLoaded) {
-              this.currentAlerts.subscribe(console.log);
+              this.currentAlerts.subscribe(
+                sa => { this.handleAlert(sa, true)}
+              );
             }
             this.currentShotsLoaded = true;
           }
@@ -132,5 +146,29 @@ export class PlayGamePageComponent implements OnInit {
       .subscribe(game => {
         this.router.navigate(["/place"], {queryParams: {'game': game.key}});
       });
+  }
+}
+
+@Component({
+  selector: 'app-play-game-alert',
+  template: `
+  <span class='{{ cssClass }}'>{{ message }}</span>`,
+  styleUrls: ['./play-game-page.component.css']
+})
+export class ShotAlertComponent implements OnInit {
+  message: string;
+  cssClass: string;
+  constructor(@Inject(MAT_SNACK_BAR_DATA) public data: any) {}
+
+  ngOnInit(): void {
+    this.message = this.data.sa.message;
+    this.cssClass = this.getCss();
+    console.log(this.cssClass);
+  }
+
+  getCss(): string {
+    let sink = this.data.sa.sink ? " alert-sink" : "";
+    let good = this.data.good ? " alert-good" : " alert-bad";
+    return "shot-alert" + sink + good;
   }
 }

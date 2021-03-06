@@ -10,8 +10,9 @@ import { GameService } from './game.service';
 
 
 export interface ShotAlert {
-  shot: Shot,
-  message: string
+  shot: Shot;
+  message: string;
+  sink?: boolean;
 }
 
 
@@ -112,14 +113,15 @@ export class BoardService {
 
   handleAlert(ship: Ship, shot: Shot): void {
     let message = "";
+    let sink = ship.isSunk;
 
-    if (ship.isSunk) {
+    if (sink) {
       message = `Ship sunk at row: ${shot.row}, col: ${shot.col}`;
     } else {
       message = `Ship hit at row: ${shot.row}, col ${shot.col}`;
     }
 
-    this.alerts.next({shot, message});
+    this.alerts.next({shot, message, sink});
   }
 
   getAlerts(): Observable<ShotAlert> {
