@@ -237,16 +237,23 @@ export class DatabaseService {
     ship.update(this.shipsRef, data);
   }
 
-  fireShot(row: number, col: number): void {
-    combineLatest([
+  fireShot(row: number, col: number): Observable<Shot> {
+    return combineLatest([
       this.getCurrentGame(),
       this.getPlayerKey()
-    ]).pipe(take(1)).subscribe(
-      ([game, playerKey]) => {
+    ]).pipe(
+      take(1),
+      switchMap(([game, playerKey]) => {
         let shot = new Shot(row, col, game.key, playerKey);
-        shot.create(this.shotsRef);
-      }
-    );
+        return shot.create(this.shotsRef);
+      })
+      )
+    //   .subscribe(
+    //   ([game, playerKey]) => {
+    //     let shot = new Shot(row, col, game.key, playerKey);
+    //     shot.create(this.shotsRef);
+    //   }
+    // );
   }
 
 }

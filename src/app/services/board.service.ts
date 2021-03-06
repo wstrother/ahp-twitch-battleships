@@ -2,11 +2,17 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { Board } from '../models/board';
-import { Cell } from '../models/cell';
 import { Game } from '../models/game';
 import { Ship } from '../models/ship';
+import { Shot } from '../models/shot';
 import { DatabaseService } from './database.service';
 import { GameService } from './game.service';
+
+
+export interface ShotAlert {
+  shot: Shot,
+  message: string
+}
 
 
 @Injectable({
@@ -16,6 +22,7 @@ export class BoardService {
   private _selected: Subject<Ship | null> = new Subject<Ship | null>();
   private _previous: Ship | null = null;
   selected$: Observable<Ship | null>;
+  alerts: Subject<ShotAlert> = new Subject();
 
   cellSize = 25;
 
@@ -86,14 +93,36 @@ export class BoardService {
     this._previous = ship;
   }
 
-  fireShot(board: Board, row: number, col: number) {
-    console.log("Firing shot into DB");
-    this.db.fireShot(row, col);
-    this.handleShot(board, row, col);
+  fireShot(board: Board, row: number, col: number): void {
+    this.db.fireShot(row, col).subscribe(
+      (shot: Shot) => {
+        this.handleShot(board, shot);
+      }
+    )
   }
 
-  handleShot(board: Board, row: number, col: number) {
-    let cell = board.getCell(row, col);
+  handleShot(board: Board, shot: Shot): void {
+    let cell = board.getCell(shot.row, shot.col);
     cell.shot = true;
+
+    if (cell.hasShip) {
+      this.handleAlert(cell.ship, shot);
+    }
+  }
+
+  handleAlert(ship: Ship, shot: Shot): void {
+    let message = "";
+
+    if (ship.isSunk) {
+      message = `Ship sunk at row: ${shot.row}, col: ${shot.col}`;
+    } else {
+      message = `Ship hit at row: ${shot.row}, col ${shot.col}`;
+    }
+
+    this.alerts.next({shot, message});
+  }
+
+  getAlerts(): Observable<ShotAlert> {
+    return this.alerts.asObservable();
   }
 }
