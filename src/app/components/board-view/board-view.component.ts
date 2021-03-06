@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { fromEvent, Subscription } from 'rxjs';
 import { Board } from 'src/app/models/board';
+import { Cell } from 'src/app/models/cell';
 import { Ghost, Ship } from 'src/app/models/ship';
 import { BoardService } from 'src/app/services/board.service';
 import { GameService } from 'src/app/services/game.service';
@@ -41,6 +42,7 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private selectedSub: Subscription;
   private eventSubs: Subscription[] = [];
+  private highlighted: Cell | null = null;
 
   @ViewChild('boardElement') el: any;
 
@@ -156,7 +158,7 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.setEventMethod(
       'contextmenu', (e) => { this.clickToMark(e) }
-    )
+    );
   }
 
   clickToFire(event: any): void {

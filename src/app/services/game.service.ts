@@ -41,8 +41,6 @@ export class GameService {
   }
 
   filterShots(shots: Shot[], playerKey: string): void {
-    console.log("filtering shots lists...");
-
     const checkToAdd = (list: Shot[], shot: Shot) => {
       if (list.every(s => !shot.check(s))) {list.push(shot)}
     }
@@ -57,8 +55,6 @@ export class GameService {
         this.otherNewShot.next(shot);
       }
     });
-
-    console.log(this._currentShots);
   }
 
   getOtherShots(): Observable<Shot> {

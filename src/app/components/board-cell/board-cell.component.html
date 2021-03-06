@@ -3,7 +3,8 @@
     (contextmenu)="handleClick($event)"
     [ngClass]="{
         'has-ghost-ok': cell.ghost && cell.ghost.ok,
-        'has-ghost-not': cell.ghost && !cell.ghost.ok, 
+        'has-ghost-not': cell.ghost && !cell.ghost.ok,
+        'shootable': fireable && !cell.hasShip && !cell.shot && !cell.marked, 
         'has-ship': cell.hasShip && !hidden,
         'has-shot': cell.shot,
         'has-mark': cell.marked,

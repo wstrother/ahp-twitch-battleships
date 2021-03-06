@@ -15,8 +15,16 @@
     background-color: white;
 }
 
+.shootable:hover {
+    background-color: lightgray;
+}
+
 .selected {
     border: 2px solid gold;
+}
+
+.highlighted {
+    background-color: lightgray;
 }
 
 .has-ghost-ok {

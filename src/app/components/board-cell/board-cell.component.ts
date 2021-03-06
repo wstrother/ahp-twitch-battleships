@@ -10,6 +10,7 @@ import { BoardService } from 'src/app/services/board.service';
 export class BoardCellComponent implements OnInit {
   @Input() cell: Cell;
   @Input() hidden: boolean;
+  @Input() fireable: boolean = false;
   @Output() cellClicked: EventEmitter<any> = new EventEmitter();
 
   constructor(private bs: BoardService) { }
