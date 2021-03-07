@@ -1,5 +1,6 @@
 import { Ghost, Ship } from "./ship";
 import { Cell } from "./cell";
+import { MonData } from "../services/mon.service";
 
 class ShipPlacementError extends Error {
     constructor(message: string) {
@@ -18,10 +19,14 @@ class BoardError extends Error {
 export class Board {
     cells: Cell[] = [];
 
-    constructor(public width: number, public totalCells: number) {
+    constructor(public width: number, public totalCells: number, public data: MonData[]) {
         for (let i = 0; i < totalCells; i++) {
-            this.cells.push(new Cell());
+            this.cells.push(new Cell(this.getData(i)));
         }
+    }
+
+    getData(index: number): MonData {
+        return this.data[index];
     }
 
     getCell(row: number, col: number): Cell | null {

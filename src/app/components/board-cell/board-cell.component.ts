@@ -16,6 +16,10 @@ export class BoardCellComponent implements OnInit {
   constructor(private bs: BoardService) { }
 
   ngOnInit(): void {
+    if (this.cell.data === undefined) {
+      console.log("hmm");
+    }
+    // console.log(this.cell.data);
   }
 
   getCellSize(): string {

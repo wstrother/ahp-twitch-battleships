@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Game } from 'src/app/models/game';
 import { DatabaseService } from 'src/app/services/database.service';
@@ -16,7 +16,7 @@ export class NewGamePageComponent implements OnInit {
     private router: Router, 
     private db: DatabaseService,
     private dialog: MatDialog
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     if (this.db.gameLoaded) {
@@ -35,7 +35,7 @@ export class NewGamePageComponent implements OnInit {
   }
 
   makeGame(): void {
-    this.numbersOnly();
+    this.validateFields();
 
     // passes form data to the database to create a new game
     // and returns a promise to get the gameKey
@@ -52,7 +52,7 @@ export class NewGamePageComponent implements OnInit {
     // html template
   }
 
-  numbersOnly(): void {
+  validateFields(): void {
     let wStr: string = this.game.boardWidth + "";
     let cStr: string = this.game.totalCells + "";
 

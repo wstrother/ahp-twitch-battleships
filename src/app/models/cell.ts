@@ -1,3 +1,4 @@
+import { MonData } from "../services/mon.service";
 import { Ghost, Ship } from "./ship";
 
 export class Cell {
@@ -31,9 +32,7 @@ export class Cell {
         }
     }
 
-    constructor() {
-        
-    }
+    constructor(public data?: MonData) {}
 
     handleMark(): void {
         this.marked = !this.marked;

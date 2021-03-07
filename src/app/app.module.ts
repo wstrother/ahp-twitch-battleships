@@ -20,6 +20,7 @@ import { NewGameDialogComponent, NewGamePageComponent } from './pages/new-game-p
 import { PlaceShipsPageComponent, StartGameDialogComponent } from './pages/place-ships-page/place-ships-page.component';
 import { ConnectionStatusComponent } from './components/connection-status/connection-status.component';
 import { PlayGamePageComponent } from './pages/play-game-page/play-game-page.component';
+import { ShipContainerComponent } from './components/ship-container/ship-container.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { PlayGamePageComponent } from './pages/play-game-page/play-game-page.com
     ConnectionStatusComponent,
     PlayGamePageComponent,
     NewGameDialogComponent,
-    StartGameDialogComponent
+    StartGameDialogComponent,
+    ShipContainerComponent
   ],
   imports: [
     BrowserModule,

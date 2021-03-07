@@ -22,13 +22,6 @@ export class ShipsViewComponent implements OnInit {
     });
   }
 
-  // returns an array of proxy Cells for use with the ship container
-  getCells(ship: Ship): any[] {
-    let arr = Array.from({"length": ship.size}, x => new Cell());
-    arr.forEach((c) => {c.ship = ship});
-    return arr;
-  }
-
   // if a ship is clicked on, toggle whether or not it is selected
   selectShip(ship: Ship): void {
     if (ship !== this.selected) {

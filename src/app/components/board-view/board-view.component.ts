@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { combineLatest, fromEvent, Subscription } from 'rxjs';
-import { finalize, switchMapTo, tap } from 'rxjs/operators';
+import { fromEvent, Subscription } from 'rxjs';
+import { switchMapTo, tap } from 'rxjs/operators';
 import { Board } from 'src/app/models/board';
 import { Cell } from 'src/app/models/cell';
 import { Ghost, Ship } from 'src/app/models/ship';

@@ -7,6 +7,7 @@ import { Ship } from '../models/ship';
 import { Shot } from '../models/shot';
 import { DatabaseService } from './database.service';
 import { GameService } from './game.service';
+import { MonService } from './mon.service';
 
 
 export interface ShotAlert {
@@ -33,9 +34,13 @@ export class BoardService {
   alerts: Subject<ShotAlert> = new Subject<ShotAlert>();
   pendingShot: Subject<null | PendingShot> = new Subject<null | PendingShot>();
 
-  cellSize = 25;
+  cellSize = 40;
 
-  constructor(private db: DatabaseService, private gs: GameService) {
+  constructor(
+    private db: DatabaseService, 
+    private gs: GameService,
+    private ms: MonService
+  ) {
     this.selected$ = this._selected.asObservable();
   }
 
@@ -46,7 +51,7 @@ export class BoardService {
   getBoard(): Observable<Board> {
     return this.db.getCurrentGame().pipe(
       map((game: Game) => {
-        return new Board(game.boardWidth, game.totalCells);
+        return new Board(game.boardWidth, game.totalCells, this.ms.mons);
       }),
       take(1)
     )
