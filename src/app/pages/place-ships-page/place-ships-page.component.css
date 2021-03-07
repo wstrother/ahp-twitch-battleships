@@ -1,8 +1,4 @@
-/* :host {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-} */
+
 
 .placement-form {
     display: flex;
@@ -14,11 +10,8 @@
     justify-content: space-evenly;
 }
 
-/* .placement-panel>* {
-    width: 50%;
-} */
-
 button {
+    margin: 1rem;
     background-color: rgb(202, 202, 202);
     color: rgba(0, 0, 0, 0.6);
 }

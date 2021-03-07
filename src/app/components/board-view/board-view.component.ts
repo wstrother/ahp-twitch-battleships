@@ -8,23 +8,23 @@ import { BoardService } from 'src/app/services/board.service';
 import { GameService } from 'src/app/services/game.service';
 
 
-class boundingBox {
-  top: number;
-  left: number;
-  right: number;
-  bottom: number;
-  width: number;
-  height: number;
+// class boundingBox {
+//   top: number;
+//   left: number;
+//   right: number;
+//   bottom: number;
+//   width: number;
+//   height: number;
 
-  constructor(element: any) {
-    this.top = element.offsetTop;
-    this.left = element.offsetLeft;
-    this.right = element.offsetLeft + element.offsetWidth;
-    this.bottom = element.offsetTop + element.offsetHeight;
-    this.width = this.right - this.left;
-    this.height = this.bottom - this.top;
-  }
-}
+//   constructor(element: any) {
+//     this.top = element.offsetTop;
+//     this.left = element.offsetLeft;
+//     this.right = element.offsetLeft + element.offsetWidth;
+//     this.bottom = element.offsetTop + element.offsetHeight;
+//     this.width = this.right - this.left;
+//     this.height = this.bottom - this.top;
+//   }
+// }
 
 
 @Component({
@@ -85,7 +85,7 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
   // get a set of coordinates {row: number, col: number} for a cell
   // associated with a mouseclick event
   getCoordinates(x: number, y: number): any {
-    let box = new boundingBox(this.el.nativeElement);
+    let box = this.el.nativeElement.getBoundingClientRect();
     let oX = x - box.left;
     let oY = y - box.top;
 
@@ -168,7 +168,7 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
     let {row, col} = this.getCoordinates(event.x, event.y);
     let pending$ = this.bs.fireShot(this.board, row, col);
     
-    const onClick = fromEvent(this.el.nativeElement, 'click');
+    const onClick = fromEvent(document, 'click');
     const resetEvents = () => {
       this.cancelEventSubs();
       this.setUpFiring();

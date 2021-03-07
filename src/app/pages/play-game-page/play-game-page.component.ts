@@ -23,6 +23,7 @@ export class PlayGamePageComponent implements OnInit {
   otherShips: Ship[] = [];
 
   pendingMessage: string = "";
+  pendingTime: number;
 
   private _currentShots: Shot[] = [];
   private _otherShots: Shot[] = [];
@@ -68,7 +69,8 @@ export class PlayGamePageComponent implements OnInit {
     this.bs.getPendingShot().subscribe(
       (p: null | PendingShot) => {
         if (p) {
-          this.pendingMessage = `Firing at row: ${p.row}, col: ${p.col} in ... ${p.time}`
+          this.pendingMessage = `Firing at ${p.cell.data.name}`;
+          this.pendingTime = p.time;
         } else {
           this.pendingMessage = "";
         }

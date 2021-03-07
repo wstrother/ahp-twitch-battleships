@@ -2,29 +2,46 @@
 
 <div class="game-panel">
     <div class="boards-panel">
-        <app-board-view class="player-board"
-            *ngIf="playerBoard"
-            [board]="playerBoard"
-            [placeable]="false"
-            [fireable]="true"
-            [showShips]="false"
-        ></app-board-view>
+        <mat-tab-group animationDuration="0ms">
+
+            <mat-tab label="Opponent's Ships">
+                <app-board-view class="player-board"
+                *ngIf="playerBoard"
+                [board]="playerBoard"
+                [placeable]="false"
+                [fireable]="true"
+                [showShips]="false"
+                ></app-board-view>
+
+                <div class="pending-panel" *ngIf="pendingMessage">
+                    <span>
+                        {{ pendingMessage }}
+                    </span>
+
+                    <span class="pending-time">
+                        {{ pendingTime }}
+                    </span>
+                    
+                    <span>
+                        (Click to cancel!)
+                    </span>
+                </div>
+            </mat-tab>
+            
+            <mat-tab label="Your Ships">
+
+                <app-board-view class="other-board"
+                *ngIf="otherBoard"
+                [board]="otherBoard"
+                [placeable]="false"
+                [fireable]="false"
+                ></app-board-view>
+                
+            </mat-tab>
+
+
+        </mat-tab-group>
         
-        <app-board-view class="other-board"
-            *ngIf="otherBoard"
-            [board]="otherBoard"
-            [placeable]="false"
-            [fireable]="false"
-        ></app-board-view>
-    </div>
 
-    <div class="ui-panel">
-        <span *ngIf="pendingMessage">
-            {{ pendingMessage }}
-        </span>
-
-        <span *ngIf="pendingMessage">
-            (Click to cancel!)
-        </span>
     </div>
 </div>

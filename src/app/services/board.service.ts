@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject, timer } from 'rxjs';
 import { finalize, map, take, tap } from 'rxjs/operators';
 import { Board } from '../models/board';
+import { Cell } from '../models/cell';
 import { Game } from '../models/game';
 import { Ship } from '../models/ship';
 import { Shot } from '../models/shot';
@@ -17,8 +18,7 @@ export interface ShotAlert {
 }
 
 export interface PendingShot {
-  row: number;
-  col: number;
+  cell: Cell;
   time: number;
 }
 
@@ -112,6 +112,8 @@ export class BoardService {
   }
 
   fireShot(board: Board, row: number, col: number): Observable<PendingShot> {
+    let cell = board.getCell(row, col);
+
     const handlePending = (p: PendingShot) => {
       this.pendingShot.next(p);
       if (p.time === 0) {
@@ -129,7 +131,7 @@ export class BoardService {
       take(4),
       finalize(() => { this.pendingShot.next(null); }),
       map((n: number): PendingShot => {
-        return {row, col, time: 3 - n};
+        return {cell, time: 3 - n};
       }),
       tap(handlePending)
     );
