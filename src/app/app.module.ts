@@ -10,6 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog'; 
 import { MatSnackBarModule } from '@angular/material/snack-bar'; 
 import { MatTabsModule } from '@angular/material/tabs'; 
+import { MatIconModule } from '@angular/material/icon'; 
 
 import { AppComponent } from './app.component';
 import { BoardViewComponent } from './components/board-view/board-view.component';
@@ -49,7 +50,8 @@ import { ShipContainerComponent } from './components/ship-container/ship-contain
     MatButtonModule,
     MatDialogModule,
     MatSnackBarModule,
-    MatTabsModule
+    MatTabsModule,
+    MatIconModule
   ],
   entryComponents: [
     NewGameDialogComponent,

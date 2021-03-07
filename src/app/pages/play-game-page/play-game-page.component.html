@@ -26,6 +26,15 @@
                         (Click to cancel!)
                     </span>
                 </div>
+
+                <mat-form-field class="example-form-field">
+                    <mat-label>Filter</mat-label>
+                    <input matInput type="text" [(ngModel)]="filter" (keyup)="setFilter($event)" (focusout)="filter=''">
+                    <button mat-button *ngIf="filter" matSuffix mat-icon-button aria-label="Clear" (click)="filter=''">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </mat-form-field>
+                  
             </mat-tab>
             
             <mat-tab label="Your Ships">

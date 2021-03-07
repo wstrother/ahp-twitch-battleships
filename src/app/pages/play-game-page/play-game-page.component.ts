@@ -22,6 +22,7 @@ export class PlayGamePageComponent implements OnInit {
   playerShips: Ship[] = [];
   otherShips: Ship[] = [];
 
+  filter: string = "";
   pendingMessage: string = "";
   pendingTime: number;
 
@@ -63,6 +64,14 @@ export class PlayGamePageComponent implements OnInit {
     this.db.onGameConnection().subscribe(
         handleConnection
     );
+  }
+
+  setFilter(event: any): void {
+    if (event.code === "Escape") {
+      this.filter = "";
+    }
+
+    this.playerBoard.filterCells(this.filter);
   }
 
   setPending(): void {

@@ -45,6 +45,27 @@ export class Board {
         );
     }
 
+    filterCells(sub: string): void {
+        sub = sub.toUpperCase();
+
+        if (!sub) {
+            this.cells.forEach(
+                cell => { cell.disabled = false; }
+            )
+        } else {
+
+            this.cells.forEach(
+                cell => {
+                    if (cell.data && !cell.data.name.toUpperCase().includes(sub)) {
+                        cell.disabled = true;
+                    } else {
+                        cell.disabled = false;
+                    }
+                }
+            );
+        }
+    }
+
     setShipPosition(ship: Ship, row: number, col: number): void {
         let cells = [];
         let currentCell = null;
