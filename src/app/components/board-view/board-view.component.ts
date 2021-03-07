@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { fromEvent, Subscription } from 'rxjs';
+import { combineLatest, fromEvent, Subscription } from 'rxjs';
+import { finalize, switchMapTo, tap } from 'rxjs/operators';
 import { Board } from 'src/app/models/board';
 import { Cell } from 'src/app/models/cell';
 import { Ghost, Ship } from 'src/app/models/ship';
@@ -42,7 +43,6 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private selectedSub: Subscription;
   private eventSubs: Subscription[] = [];
-  private highlighted: Cell | null = null;
 
   @ViewChild('boardElement') el: any;
 
@@ -162,8 +162,30 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   clickToFire(event: any): void {
+    this.cancelEventSubs();
+    this.board.toggleCells();
+    
     let {row, col} = this.getCoordinates(event.x, event.y);
-    this.bs.fireShot(this.board, row, col);
+    let pending$ = this.bs.fireShot(this.board, row, col);
+    
+    const onClick = fromEvent(this.el.nativeElement, 'click');
+    const resetEvents = () => {
+      this.cancelEventSubs();
+      this.setUpFiring();
+      this.board.toggleCells();
+    }
+    
+    
+    this.eventSubs.push(
+      
+      pending$.pipe(
+        tap((p) => {
+          if (p.time === 0) { resetEvents(); }
+        }),
+        switchMapTo(onClick)
+      ).subscribe(resetEvents)
+
+    );
   }
 
   clickToMark(event: any): void {

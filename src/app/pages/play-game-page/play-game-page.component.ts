@@ -6,7 +6,7 @@ import { take } from 'rxjs/operators';
 import { Board } from 'src/app/models/board';
 import { Ship } from 'src/app/models/ship';
 import { Shot } from 'src/app/models/shot';
-import { BoardService, ShotAlert } from 'src/app/services/board.service';
+import { BoardService, PendingShot, ShotAlert } from 'src/app/services/board.service';
 import { DatabaseService, GameConnection } from 'src/app/services/database.service';
 import { GameService } from 'src/app/services/game.service';
 
@@ -21,6 +21,8 @@ export class PlayGamePageComponent implements OnInit {
 
   playerShips: Ship[] = [];
   otherShips: Ship[] = [];
+
+  pendingMessage: string = "";
 
   private _currentShots: Shot[] = [];
   private _otherShots: Shot[] = [];
@@ -48,6 +50,7 @@ export class PlayGamePageComponent implements OnInit {
 
         this.setBoards();
         this.setAlerts();
+        this.setPending();
       }
       
       if (connected && !ready) {
@@ -59,6 +62,18 @@ export class PlayGamePageComponent implements OnInit {
     this.db.onGameConnection().subscribe(
         handleConnection
     );
+  }
+
+  setPending(): void {
+    this.bs.getPendingShot().subscribe(
+      (p: null | PendingShot) => {
+        if (p) {
+          this.pendingMessage = `Firing at row: ${p.row}, col: ${p.col} in ... ${p.time}`
+        } else {
+          this.pendingMessage = "";
+        }
+      }
+    )
   }
 
   setAlerts(): void {
@@ -163,7 +178,6 @@ export class ShotAlertComponent implements OnInit {
   ngOnInit(): void {
     this.message = this.data.sa.message;
     this.cssClass = this.getCss();
-    console.log(this.cssClass);
   }
 
   getCss(): string {

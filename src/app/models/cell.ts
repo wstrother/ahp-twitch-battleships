@@ -5,6 +5,7 @@ export class Cell {
     shot: boolean = false;
     ship: Ship | null = null;
     ghost: Ghost | null = null;
+    disabled: boolean = false;
     
     get hasShip(): boolean {
         if (this.ship) {

@@ -55,3 +55,6 @@
     background-color: purple;
 }
 
+.disabled {
+    opacity: 0.5;
+}

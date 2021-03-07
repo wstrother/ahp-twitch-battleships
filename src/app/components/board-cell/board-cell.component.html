@@ -4,13 +4,14 @@
     [ngClass]="{
         'has-ghost-ok': cell.ghost && cell.ghost.ok,
         'has-ghost-not': cell.ghost && !cell.ghost.ok,
-        'shootable': fireable && !cell.hasShip && !cell.shot && !cell.marked, 
+        'shootable': fireable && !cell.disabled && !cell.shot && !cell.marked, 
         'has-ship': cell.hasShip && !hidden,
         'has-shot': cell.shot,
         'has-mark': cell.marked,
         'has-hit': cell.shot && cell.hasShip,
         'has-sink': cell.shipSunk,
-        'selected': cell.selected
+        'selected': cell.selected,
+        'disabled': cell.disabled
     }"
     [ngStyle]="{
         'width': getCellSize(),

@@ -34,6 +34,12 @@ export class Board {
         return cell;
     }
 
+    toggleCells(): void {
+        this.cells.forEach(
+            cell => { cell.disabled = !cell.disabled; }
+        );
+    }
+
     setShipPosition(ship: Ship, row: number, col: number): void {
         let cells = [];
         let currentCell = null;
