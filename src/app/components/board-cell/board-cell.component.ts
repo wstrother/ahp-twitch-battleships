@@ -16,16 +16,20 @@ export class BoardCellComponent implements OnInit {
   constructor(private bs: BoardService) { }
 
   ngOnInit(): void {
-    if (this.cell.data === undefined) {
-      console.log("hmm");
+    if (this.cell.data) {
+      console.log(this.cell.data);
     }
-    // console.log(this.cell.data);
   }
 
   getCellSize(): string {
     return `${this.bs.cellSize}px`;
   }
 
+  getBgImage(): string {
+    if (this.cell.data) {
+      return `url("${this.cell.data.src}")`
+    }
+  }
 
   handleClick(event: any): void {
     event.preventDefault();
