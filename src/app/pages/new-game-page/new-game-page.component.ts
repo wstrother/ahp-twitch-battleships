@@ -65,7 +65,7 @@ export class NewGamePageComponent implements OnInit {
     }
 
     this.game.boardWidth = toNum(wStr, 10, 30);
-    this.game.totalCells = toNum(cStr, 50, 900);
+    this.game.totalCells = toNum(cStr, 50, 386);
   }
 }
 
