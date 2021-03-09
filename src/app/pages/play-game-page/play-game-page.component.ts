@@ -105,10 +105,10 @@ export class PlayGamePageComponent implements OnInit {
       )
   }
 
-  handleAlert(sa: ShotAlert, good: boolean=true): void {
+  handleAlert(shotAlert: ShotAlert, self: boolean): void {
     this.snackBar.openFromComponent(ShotAlertComponent, {
       duration: 3000,
-      data: {sa, good}
+      data: {shotAlert, self}
     });
   }
 
@@ -184,16 +184,50 @@ export class PlayGamePageComponent implements OnInit {
 export class ShotAlertComponent implements OnInit {
   message: string;
   cssClass: string;
-  constructor(@Inject(MAT_SNACK_BAR_DATA) public data: any) {}
+  self: boolean;
+  shotAlert: ShotAlert;
+  row: number;
+  col: number;
+
+  constructor(@Inject(MAT_SNACK_BAR_DATA) public data: any) {
+  }
 
   ngOnInit(): void {
-    this.message = this.data.sa.message;
+    this.shotAlert = this.data.shotAlert;
+    this.self = this.data.self;
+    let shot = this.data.shotAlert.shot;
+    this.row = shot.row;
+    this.col = shot.col;
+
+    this.message = this.getMessage();
     this.cssClass = this.getCss();
   }
 
+  getMessage(): string {
+    let cell = this.shotAlert.cell;
+    let target = cell.data.name;
+    let action: string;
+    let coords = `row: ${this.row + 1}, col: ${this.col + 1}`
+
+    if (cell.hasShip) {
+      if (cell.ship.isSunk) {
+        action = "Ship sunk";
+      } else {
+        action = "Direct hit";
+      }
+    } else {
+      action = "Shot fired";
+    }
+
+    
+
+    return `${action} at ${target}! (${coords})`;
+  }
+
   getCss(): string {
-    let sink = this.data.sa.sink ? " alert-sink" : "";
-    let good = this.data.good ? " alert-good" : " alert-bad";
+    let sink = this.shotAlert.sink ? " alert-sink" : "";
+    let good = this.self ? " alert-good" : " alert-bad";
+
     return "shot-alert" + sink + good;
   }
 }

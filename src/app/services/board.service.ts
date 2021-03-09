@@ -13,8 +13,9 @@ import { MonService } from './mon.service';
 
 export interface ShotAlert {
   shot: Shot;
-  message: string;
-  sink?: boolean;
+  cell: Cell;
+  sink: boolean;
+  hit: boolean;
 }
 
 export interface PendingShot {
@@ -140,25 +141,28 @@ export class BoardService {
   }
 
   handleShot(board: Board, shot: Shot): void {
+    console.log(shot);
     let cell = board.getCell(shot.row, shot.col);
     cell.shot = true;
-
-    if (cell.hasShip) {
-      this.handleAlert(cell.ship, shot);
-    }
+    this.handleAlert(cell, shot);
   }
 
-  handleAlert(ship: Ship, shot: Shot): void {
-    let message = "";
-    let sink = ship.isSunk;
+  handleAlert(cell: Cell, shot: Shot): void {
+    // let message = "";
+    // let sink = ship.isSunk;
 
-    if (sink) {
-      message = `Ship sunk at row: ${shot.row}, col: ${shot.col}`;
-    } else {
-      message = `Ship hit at row: ${shot.row}, col ${shot.col}`;
+    // if (sink) {
+    //   message = `Ship sunk at row: ${shot.row}, col: ${shot.col}`;
+    // } else {
+    //   message = `Ship hit at row: ${shot.row}, col ${shot.col}`;
+    // }
+    let hit = cell.hasShip;
+    let sink = false;
+    if (hit) {
+      sink = cell.ship.isSunk;
     }
 
-    this.alerts.next({shot, message, sink});
+    this.alerts.next({shot, cell, hit, sink});
   }
 
   getAlerts(): Observable<ShotAlert> {
