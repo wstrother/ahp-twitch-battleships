@@ -39,9 +39,15 @@ export class Board {
         return cell;
     }
 
-    toggleCells(): void {
+    enableAll(): void {
         this.cells.forEach(
-            cell => { cell.disabled = !cell.disabled; }
+            cell => { cell.disabled = false; }
+        );
+    }
+
+    disableAll(): void {
+        this.cells.forEach(
+            cell => { cell.disabled = true; }
         );
     }
 
@@ -49,9 +55,7 @@ export class Board {
         sub = sub.toUpperCase();
 
         if (!sub) {
-            this.cells.forEach(
-                cell => { cell.disabled = false; }
-            )
+            this.enableAll();
         } else {
 
             this.cells.forEach(

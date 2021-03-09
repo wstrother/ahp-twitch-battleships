@@ -163,7 +163,7 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   clickToFire(event: any): void {
     this.cancelEventSubs();
-    this.board.toggleCells();
+    this.board.disableAll();
     
     let {row, col} = this.getCoordinates(event.x, event.y);
     let pending$ = this.bs.fireShot(this.board, row, col);
@@ -172,7 +172,7 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
     const resetEvents = () => {
       this.cancelEventSubs();
       this.setUpFiring();
-      this.board.toggleCells();
+      this.board.enableAll();
     }
     
     
