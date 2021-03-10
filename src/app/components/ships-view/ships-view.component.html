@@ -2,6 +2,8 @@
     *ngFor="let ship of ships"
     [ship]="ship"
     (click)="selectShip(ship)"
+    matTooltip="Click to Select (Right-Click to Rotate)"
+    matTooltipShowDelay="250"
     [ngClass]="{
         'selected': ship.selected,
         'placed': ship.placed

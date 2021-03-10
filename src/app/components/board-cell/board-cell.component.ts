@@ -30,6 +30,14 @@ export class BoardCellComponent implements OnInit {
     }
   }
 
+  getTooltip(): string | null {
+    if (this.cell.data) {
+      return this.cell.data.name;
+    } else {
+      return null
+    }
+  }
+
   handleClick(event: any): void {
     event.preventDefault();
     this.cellClicked.emit(event);

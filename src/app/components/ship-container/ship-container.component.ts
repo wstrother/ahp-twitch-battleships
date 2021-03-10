@@ -18,4 +18,8 @@ export class ShipContainerComponent implements OnInit {
     this.cells.forEach((c) => {c.ship = this.ship});
   }
 
+  get isSelected(): boolean {
+    return this.cells[0].selected;
+  }
+
 }
