@@ -83,6 +83,20 @@ export class PlayGamePageComponent implements OnInit {
     );
   }
 
+  get totalShots(): number {
+    let total = 0;
+
+    if (this.playerBoard) {
+      this.playerBoard.cells.forEach(
+        (cell) => {
+          if (cell.shot) { total++; }
+        }
+      )
+    }
+
+    return total;
+  }
+
   setFilter(event: any): void {
     if (event.code === "Escape") {
       this.filter = "";
