@@ -41,6 +41,8 @@
                 name="totalCells" />
         </mat-form-field>
 
+        <mat-checkbox [(ngModel)]="game.random">Randomize</mat-checkbox>
+
     </div>
     
     <button mat-button (click)="openDialog()">Create</button>

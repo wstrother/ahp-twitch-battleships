@@ -49,19 +49,11 @@ export class NewGamePageComponent implements OnInit {
   makeGame(): void {
     this.validateFields();
 
-    // passes form data to the database to create a new game
-    // and returns a promise to get the gameKey
-    // use the gameKey when returned to navigate to the '/place/
-    // page with gameKey as 'game' parameter
-
     this.db.createGame(this.game).subscribe(
       () => {
         this.router.navigate(["/place"], {queryParams: {'game': this.game.key}});
       }
     );
-    // TODO:
-    // add .catch later to provide front end error handling to the
-    // html template
   }
 
   validateFields(): void {

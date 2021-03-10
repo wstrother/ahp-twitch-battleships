@@ -17,6 +17,15 @@ export class MonService {
 
   constructor() { }
 
+  getMons(game): MonData[] {
+    if (!game.random) {
+      return this.mons
+    } else {      
+      let mons = this.mons.slice(0, game.totalCells);
+      return this.getRandom(mons, game.seed)
+    }
+  }
+
   getRandom(array: MonData[], seed: string) {
     
     seedrandom(seed, { global: true });

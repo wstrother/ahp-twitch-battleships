@@ -13,6 +13,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon'; 
 import { MatTooltipModule } from '@angular/material/tooltip'; 
 import { MatSelectModule } from '@angular/material/select'; 
+import { MatCheckboxModule } from '@angular/material/checkbox'; 
 
 import { AppComponent } from './app.component';
 import { BoardViewComponent } from './components/board-view/board-view.component';
@@ -55,7 +56,8 @@ import { ShipContainerComponent } from './components/ship-container/ship-contain
     MatTabsModule,
     MatIconModule,
     MatTooltipModule,
-    MatSelectModule
+    MatSelectModule,
+    MatCheckboxModule
   ],
   entryComponents: [
     NewGameDialogComponent,

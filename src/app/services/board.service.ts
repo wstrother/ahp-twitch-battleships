@@ -52,7 +52,7 @@ export class BoardService {
   getBoard(): Observable<Board> {
     return this.db.getCurrentGame().pipe(
       map((game: Game) => {
-        return new Board(game.boardWidth, game.totalCells, this.ms.mons);
+        return new Board(game.boardWidth, game.totalCells, this.ms.getMons(game));
       }),
       take(1)
     )

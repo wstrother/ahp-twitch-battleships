@@ -166,6 +166,9 @@ export class DatabaseService {
   }
 
   createGame(game: Game): Observable<Game> { 
+    if (game.random) {
+      game.seed = Date.now() + "";
+    }
 
     return this.getPlayerKey().pipe(
       switchMap((playerKey: string) => {
