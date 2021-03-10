@@ -12,6 +12,14 @@
                 name="gameName" />
         </mat-form-field>
         
+        <mat-form-field appearance="fill">
+            <mat-label>Select Gen</mat-label>
+                <mat-select (selectionChange)=selectGen($event) [(value)]="selected">
+                    <mat-option *ngFor="let gen of gens" [value]="gen">
+                        {{gen.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
         
         <mat-form-field floatLabel="always">
             <mat-label>Number of Columns</mat-label>
@@ -22,15 +30,17 @@
                 [(ngModel)]="game.boardWidth" 
                 name="boardWidth" />
         </mat-form-field>
-        
+
         <mat-form-field floatLabel="always">
-            <mat-label>Total number of items</mat-label>
+            <mat-label>Total Cells</mat-label>
             <input 
                 (focusout)="validateFields()"
-                matInput type="text" 
+                matInput 
+                type="text" 
                 [(ngModel)]="game.totalCells" 
                 name="totalCells" />
         </mat-form-field>
+
     </div>
     
     <button mat-button (click)="openDialog()">Create</button>

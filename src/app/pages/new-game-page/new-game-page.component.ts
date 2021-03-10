@@ -4,13 +4,25 @@ import { Router } from '@angular/router';
 import { Game } from 'src/app/models/game';
 import { DatabaseService } from 'src/app/services/database.service';
 
+interface Generation {
+  name: string,
+  totalCells: number,
+  defaultWidth: number
+}
+
 @Component({
   selector: 'app-new-game-page',
   templateUrl: './new-game-page.component.html',
   styleUrls: ['./new-game-page.component.css']
 })
 export class NewGamePageComponent implements OnInit {
-  game: Game = new Game("New Game", 10, 100);
+  game: Game = new Game("New Game", 13, 151);
+  gens: Generation[] = [
+    {name: "Gen 1", totalCells: 151, defaultWidth: 13},
+    {name: "Gen 2", totalCells: 251, defaultWidth: 16},
+    {name: "Gen 3", totalCells: 386, defaultWidth: 20}
+  ]
+  selected: Generation = this.gens[0];
   
   constructor(
     private router: Router, 
@@ -66,6 +78,11 @@ export class NewGamePageComponent implements OnInit {
 
     this.game.boardWidth = toNum(wStr, 10, 30);
     this.game.totalCells = toNum(cStr, 50, 386);
+  }
+
+  selectGen(event: any): void {
+    this.game.boardWidth = event.value.defaultWidth;
+    this.game.totalCells = event.value.totalCells;
   }
 }
 
