@@ -141,21 +141,12 @@ export class BoardService {
   }
 
   handleShot(board: Board, shot: Shot): void {
-    console.log(shot);
     let cell = board.getCell(shot.row, shot.col);
     cell.shot = true;
     this.handleAlert(cell, shot);
   }
 
   handleAlert(cell: Cell, shot: Shot): void {
-    // let message = "";
-    // let sink = ship.isSunk;
-
-    // if (sink) {
-    //   message = `Ship sunk at row: ${shot.row}, col: ${shot.col}`;
-    // } else {
-    //   message = `Ship hit at row: ${shot.row}, col ${shot.col}`;
-    // }
     let hit = cell.hasShip;
     let sink = false;
     if (hit) {

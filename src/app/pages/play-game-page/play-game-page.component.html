@@ -2,14 +2,14 @@
 
 <div class="game-panel">
     <div class="boards-panel">
-        <mat-tab-group animationDuration="0ms">
+        <mat-tab-group animationDuration="0ms" dynamicHeight>
 
             <mat-tab label="Opponent's Ships">
                 <app-board-view class="player-board"
                 *ngIf="playerBoard"
                 [board]="playerBoard"
                 [placeable]="false"
-                [fireable]="true"
+                [fireable]="gameReady"
                 [showShips]="false"
                 ></app-board-view>
 
@@ -23,7 +23,7 @@
                     </span>
                     
                     <span>
-                        (Click to cancel!)
+                        {{ cancelMessage }}
                     </span>
                 </div>
 

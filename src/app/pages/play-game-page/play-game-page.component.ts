@@ -18,12 +18,14 @@ import { GameService } from 'src/app/services/game.service';
 export class PlayGamePageComponent implements OnInit {
   playerBoard: Board;
   otherBoard: Board;
+  gameReady: boolean = false;
 
   playerShips: Ship[] = [];
   otherShips: Ship[] = [];
 
   filter: string = "";
-  pendingMessage: string = "";
+  pendingMessage: string;
+  cancelMessage: string = "";
   pendingTime: number;
 
   private _currentShots: Shot[] = [];
@@ -44,15 +46,30 @@ export class PlayGamePageComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    let boardsSet = false;
+
     const handleConnection = ({game, connected, playerKey}: GameConnection) => {
 
       let ready = game.getReady(playerKey);
+      let otherReady = game.otherReady(playerKey);
 
       if (connected && ready) {
 
-        this.setBoards();
-        this.setAlerts();
-        this.setPending();
+        if (!boardsSet) {
+          this.setBoards();
+          boardsSet = true;
+        }
+        
+        if (!otherReady) {
+          this.pendingMessage = "Waiting for opponent to get ready...";
+        }
+        
+        if (otherReady) {
+          this.pendingMessage = "";
+          this.gameReady = true;
+          this.setAlerts();
+          this.setPending();
+        }
       }
       
       if (connected && !ready) {
@@ -80,6 +97,7 @@ export class PlayGamePageComponent implements OnInit {
         if (p) {
           this.pendingMessage = `Firing at ${p.cell.data.name}`;
           this.pendingTime = p.time;
+          this.cancelMessage = "(Click to cancel)"
         } else {
           this.pendingMessage = "";
         }
@@ -106,10 +124,17 @@ export class PlayGamePageComponent implements OnInit {
   }
 
   handleAlert(shotAlert: ShotAlert, self: boolean): void {
-    this.snackBar.openFromComponent(ShotAlertComponent, {
-      duration: 3000,
-      data: {shotAlert, self}
-    });
+    let open = true;
+    if (self && !shotAlert.hit) {
+      open = false;
+    }
+
+    if (open) {
+      this.snackBar.openFromComponent(ShotAlertComponent, {
+        duration: 3000,
+        data: {shotAlert, self}
+      });
+    }
   }
 
   setBoards(): void {

@@ -24,7 +24,9 @@ export class BoardCellComponent implements OnInit {
 
   getBgImage(): string {
     if (this.cell.data) {
-      return `url("${this.cell.data.src}")`
+      return `url("${this.cell.data.src}")`;
+    } else {
+      return 'none';
     }
   }
 
