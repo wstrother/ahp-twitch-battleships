@@ -31,66 +31,66 @@ export class PlaceShipsPageComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const handleConnection = ({game, connected, playerKey}: GameConnection) => {
+    // const handleConnection = ({game, connected, playerKey}: GameConnection) => {
 
-      let ready = game.getReady(playerKey);
+    //   let ready = game.getReady(playerKey);
 
-      if (connected && !ready) {
+    //   if (connected && !ready) {
 
-        this.setShips();
+    //     this.setShips();
 
-        this.setBoard();
+    //     this.setBoard();
 
-      }
+    //   }
       
-      if (connected && ready) {
-        this.gotoGame();
-      }
+    //   if (connected && ready) {
+    //     this.gotoGame();
+    //   }
 
-    }
+    // }
 
-    this.db.onGameConnection().subscribe(
-        handleConnection,
-        (err) => {console.log(err.name)}
-    );
+    // this.db.onGameConnection().subscribe(
+    //     handleConnection,
+    //     (err) => {console.log(err.name)}
+    // );
   }
 
-  openDialog(): void {
-    let dialogRef = this.dialog.open(StartGameDialogComponent);
+  // openDialog(): void {
+  //   let dialogRef = this.dialog.open(StartGameDialogComponent);
 
-    dialogRef.afterClosed().subscribe(
-      (result: any) => {
-        if (result) { this.startGame(); }
-      }
-    );
-  }
+  //   dialogRef.afterClosed().subscribe(
+  //     (result: any) => {
+  //       if (result) { this.startGame(); }
+  //     }
+  //   );
+  // }
 
-  setShips(): void {
-    this.gs.getCurrentShips().subscribe(
-      (ships) => { this.ships = ships }
-    )
-  }
+  // setShips(): void {
+  //   this.gs.getCurrentShips().subscribe(
+  //     (ships) => { this.ships = ships }
+  //   )
+  // }
 
-  setBoard(): void {
-    this.bs.getBoard().subscribe(
-      board => {
-        this.bs.loadCurrentShips(board);
-        this.board = board;
-      }
-    );
-  }
+  // setBoard(): void {
+  //   this.bs.getBoard().subscribe(
+  //     board => {
+  //       this.bs.loadCurrentShips(board);
+  //       this.board = board;
+  //     }
+  //   );
+  // }
 
-  startGame(): void {
-    this.db.setReady();
-    this.gotoGame();
-  }
+  // startGame(): void {
+  //   this.db.setReady();
+  //   this.gotoGame();
+  // }
 
-  gotoGame(): void {
-    this.db.getCurrentGame().pipe(take(1))
-      .subscribe(game => {
-        this.router.navigate(["/play"], {queryParams: {'game': game.key}});
-      });
-  }
+  // gotoGame(): void {
+  //   this.db.getCurrentGame().pipe(take(1))
+  //     .subscribe(game => {
+  //       this.router.navigate(["/play"], {queryParams: {'game': game.key}});
+  //     });
+  // }
 }
 
 @Component({

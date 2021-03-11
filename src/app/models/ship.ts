@@ -1,4 +1,3 @@
-import { SnapshotAction } from "@angular/fire/database";
 import { Cell } from "./cell";
 import { DbItem } from "./db-item";
 
@@ -22,7 +21,7 @@ export class Ship extends DbItem {
     constructor(
         public size?: number, 
         public gameKey?: string, 
-        public playerKey?: string) {
+        public player?: string) {
         super();
     }
 
@@ -34,14 +33,9 @@ export class Ship extends DbItem {
             direction: this.direction,
             placed: this.placed,
             gameKey: this.gameKey,
-            playerKey: this.playerKey
+            player: this.player
         }
     }
-
-    // static getFromData(key: string, data: any) {
-    //     delete data.placed;
-    //     return super.getFromData(key, data);
-    // }
 
     get isSunk(): boolean {
         if (this.getHits().length === this.size) {

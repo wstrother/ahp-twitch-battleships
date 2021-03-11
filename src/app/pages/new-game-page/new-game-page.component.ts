@@ -31,9 +31,9 @@ export class NewGamePageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (this.db.gameLoaded) {
-      window.location.reload(); 
-    }
+    // if (this.db.gameLoaded) {
+    //   window.location.reload(); 
+    // }
   }
 
   openDialog(): void {

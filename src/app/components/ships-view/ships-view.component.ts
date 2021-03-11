@@ -17,18 +17,18 @@ export class ShipsViewComponent implements OnInit {
 
   ngOnInit(): void {
     // subscribes to boardService to update selected ship
-    this.bs.selected$.subscribe((ship) => {
-      this.selected = ship;
-    });
+    // this.bs.selected$.subscribe((ship) => {
+    //   this.selected = ship;
+    // });
   }
 
   // if a ship is clicked on, toggle whether or not it is selected
-  selectShip(ship: Ship): void {
-    if (ship !== this.selected) {
-      this.bs.selectShip(ship);
-    } else {
-      this.bs.selectShip(null);
-    }
-  }
+  // selectShip(ship: Ship): void {
+  //   if (ship !== this.selected) {
+  //     this.bs.selectShip(ship);
+  //   } else {
+  //     this.bs.selectShip(null);
+  //   }
+  // }
 
 }

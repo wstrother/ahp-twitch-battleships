@@ -21,8 +21,8 @@ export class GameService {
   private otherNewShot: ReplaySubject<Shot> = new ReplaySubject<Shot>();
 
   constructor(private db: DatabaseService) {
-    this.setCurrentShips();
-    this.setOtherShips();
+    // this.setCurrentShips();
+    // this.setOtherShips();
     // this.setShots();
   }
 
@@ -63,98 +63,98 @@ export class GameService {
   //   });
   // }
 
-  getOtherShots(): Observable<Shot[]> {
-    return combineLatest([
-      this.db.getCurrentGame(),
-      this.db.getPlayerKey()
-    ]).pipe(
-      switchMap(([game, playerKey]) => this.db.getGameShots(game.key)
-        .pipe(
-          map(shots => shots.filter(shot => shot.playerKey !== playerKey))
-        )
-    ));
-  }
+  // getOtherShots(): Observable<Shot[]> {
+  //   return combineLatest([
+  //     this.db.getCurrentGame(),
+  //     this.db.getPlayerKey()
+  //   ]).pipe(
+  //     switchMap(([game, playerKey]) => this.db.getGameShots(game.key)
+  //       .pipe(
+  //         map(shots => shots.filter(shot => shot.playerKey !== playerKey))
+  //       )
+  //   ));
+  // }
 
-  getCurrentShots(): Observable<Shot[]> {
-    return combineLatest([
-      this.db.getCurrentGame(),
-      this.db.getPlayerKey()
-    ]).pipe(
-      switchMap(([game, playerKey]) => this.db.getGameShots(game.key)
-        .pipe(
-          map(shots => shots.filter(shot => shot.playerKey === playerKey))
-        )
-    ));
-  }
+  // getCurrentShots(): Observable<Shot[]> {
+  //   return combineLatest([
+  //     this.db.getCurrentGame(),
+  //     this.db.getPlayerKey()
+  //   ]).pipe(
+  //     switchMap(([game, playerKey]) => this.db.getGameShots(game.key)
+  //       .pipe(
+  //         map(shots => shots.filter(shot => shot.playerKey === playerKey))
+  //       )
+  //   ));
+  // }
 
-  getCurrentShips(): Observable<Ship[]> {
-    return this.currentShips.asObservable().pipe(take(1));
-  }
+  // getCurrentShips(): Observable<Ship[]> {
+  //   return this.currentShips.asObservable().pipe(take(1));
+  // }
 
-  setCurrentShips(): void {
+  // setCurrentShips(): void {
 
-    const currentShip$ = ([game, playerKey]) => {
-      return this.db.getGameShips(game.key).pipe(
-        map(ships => ships.filter(s => s.playerKey === playerKey)),        
-        first(ships => ships.length === game.shipArgs.length)
-      )
-    }
+  //   const currentShip$ = ([game, playerKey]) => {
+  //     return this.db.getGameShips(game.key).pipe(
+  //       map(ships => ships.filter(s => s.playerKey === playerKey)),        
+  //       first(ships => ships.length === game.shipArgs.length)
+  //     )
+  //   }
 
-    combineLatest([
-      this.db.getCurrentGame(),
-      this.db.getPlayerKey()
-    ]).pipe(
-      switchMap(currentShip$)
-    ).subscribe(
-      (ships) => {
-        this.currentShips.next(ships);
-      }
-    );
+  //   combineLatest([
+  //     this.db.getCurrentGame(),
+  //     this.db.getPlayerKey()
+  //   ]).pipe(
+  //     switchMap(currentShip$)
+  //   ).subscribe(
+  //     (ships) => {
+  //       this.currentShips.next(ships);
+  //     }
+  //   );
 
-  }
+  // }
 
-  onOtherReady(): Observable<Boolean> {
-    return this.otherShips.pipe(
-      map((ships: Ship[]) => {return true}),
-      take(1)
-    );
-  }
+  // onOtherReady(): Observable<Boolean> {
+  //   return this.otherShips.pipe(
+  //     map((ships: Ship[]) => {return true}),
+  //     take(1)
+  //   );
+  // }
 
-  getOtherShips(): Observable<Ship[]> {
-    return this.otherShips.pipe(take(1));
-  }
+  // getOtherShips(): Observable<Ship[]> {
+  //   return this.otherShips.pipe(take(1));
+  // }
 
-  setOtherShips(): void {
+  // setOtherShips(): void {
 
-    const otherFilter = (ships: Ship[], game: Game, playerKey: string) => {
-      let mapped = [];
-      let otherKey = game.otherKey(playerKey);
+  //   const otherFilter = (ships: Ship[], game: Game, playerKey: string) => {
+  //     let mapped = [];
+  //     let otherKey = game.otherKey(playerKey);
 
-      if (game.otherReady(playerKey)) {
-        mapped = ships.filter(s => s.playerKey === otherKey)
-      }
+  //     if (game.otherReady(playerKey)) {
+  //       mapped = ships.filter(s => s.playerKey === otherKey)
+  //     }
 
-      return mapped
-    }
+  //     return mapped
+  //   }
 
-    const otherShip$ = ([game, playerKey]) => {
-      return this.db.getGameShips(game.key).pipe(
-        map(ships => otherFilter(ships, game, playerKey)),
-        first(ships => ships.length === game.shipArgs.length)
-      )
-    }
+  //   const otherShip$ = ([game, playerKey]) => {
+  //     return this.db.getGameShips(game.key).pipe(
+  //       map(ships => otherFilter(ships, game, playerKey)),
+  //       first(ships => ships.length === game.shipArgs.length)
+  //     )
+  //   }
 
-    combineLatest([
-      this.db.getCurrentGame(),
-      this.db.getPlayerKey()
-    ]).pipe(
-      switchMap(otherShip$)
-    ).subscribe(
-      (ships) => {
-        this.otherShips.next(ships);
-      }
-    );
+  //   combineLatest([
+  //     this.db.getCurrentGame(),
+  //     this.db.getPlayerKey()
+  //   ]).pipe(
+  //     switchMap(otherShip$)
+  //   ).subscribe(
+  //     (ships) => {
+  //       this.otherShips.next(ships);
+  //     }
+  //   );
 
-  }
+  // }
 
 }
