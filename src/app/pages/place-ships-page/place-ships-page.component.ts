@@ -4,11 +4,9 @@ import { BoardService } from 'src/app/services/board.service';
 import { Board } from 'src/app/models/board';
 import { Ship } from 'src/app/models/ship';
 import { switchMap, take, tap } from 'rxjs/operators';
-import { DatabaseService, GameConnection } from 'src/app/services/database.service';
-import { GameService } from 'src/app/services/game.service';
+import { DatabaseService } from 'src/app/services/database.service';
 import { MatDialog } from '@angular/material/dialog';
-import { combineLatest, Observable } from 'rxjs';
-import { Game } from 'src/app/models/game';
+import { combineLatest } from 'rxjs';
 
 
 @Component({
@@ -73,21 +71,6 @@ export class PlaceShipsPageComponent implements OnInit {
       }
     );
   }
-
-  // setShips(): void {
-  //   this.db.getCurrentShips().pipe(take(1)).subscribe(
-  //     (ships) => { this.ships = ships; }
-  //   )
-  // }
-
-  // setBoard(): void {
-  //   this.bs.getBoard().subscribe(
-  //     board => {
-  //       this.bs.loadCurrentShips(board);
-  //       this.board = board;
-  //     }
-  //   );
-  // }
 
   startGame(): void {
     this.db.setReady();

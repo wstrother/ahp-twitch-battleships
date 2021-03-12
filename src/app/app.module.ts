@@ -19,21 +19,18 @@ import { AppComponent } from './app.component';
 import { BoardViewComponent } from './components/board-view/board-view.component';
 import { AppRoutingModule } from './app-routing.module';
 import { BoardCellComponent } from './components/board-cell/board-cell.component';
-import { BoardUiComponent } from './components/board-ui/board-ui.component';
 import { ShipsViewComponent } from './components/ships-view/ships-view.component';
 import { NewGameDialogComponent, NewGamePageComponent } from './pages/new-game-page/new-game-page.component';
 import { PlaceShipsPageComponent, StartGameDialogComponent } from './pages/place-ships-page/place-ships-page.component';
 import { ConnectionStatusComponent } from './components/connection-status/connection-status.component';
 import { PlayGamePageComponent } from './pages/play-game-page/play-game-page.component';
 import { ShipContainerComponent } from './components/ship-container/ship-container.component';
-import { TestDbPageComponent } from './pages/test-db-page/test-db-page.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     BoardViewComponent,
     BoardCellComponent,
-    BoardUiComponent,
     ShipsViewComponent,
     NewGamePageComponent,
     PlaceShipsPageComponent,
@@ -41,8 +38,7 @@ import { TestDbPageComponent } from './pages/test-db-page/test-db-page.component
     PlayGamePageComponent,
     NewGameDialogComponent,
     StartGameDialogComponent,
-    ShipContainerComponent,
-    TestDbPageComponent
+    ShipContainerComponent
   ],
   imports: [
     BrowserModule,

@@ -7,7 +7,6 @@ import { Game } from '../models/game';
 import { Ship } from '../models/ship';
 import { Shot } from '../models/shot';
 import { DatabaseService } from './database.service';
-import { GameService } from './game.service';
 import { MonService } from './mon.service';
 
 
@@ -38,8 +37,7 @@ export class BoardService {
   cellSize = 40;
 
   constructor(
-    private db: DatabaseService, 
-    // private gs: GameService,
+    private db: DatabaseService,
     private ms: MonService
   ) {
     this.selected$ = this._selected.asObservable();
@@ -58,36 +56,11 @@ export class BoardService {
     );
   }
 
-  // loadCurrentShips(board: Board): void {
-  //   this.db.getCurrentShips().pipe(take(1)).subscribe(
-  //     (ships: Ship[]) => {this.placeShips(board, ships)}
-  //   );
-  // }
-
-  // loadOtherShips(board: Board): void {
-  //   this.gs.getOtherShips().subscribe(
-  //     (ships: Ship[]) => {this.placeShips(board, ships)}
-  //   )
-  // }
-
-  // placeShips(board: Board, ships: Ship[]): void {
-  //   ships.forEach(ship => {
-  //     if (ship.placed) {
-  //       console.log(ship);
-  //       board.setShipPosition(ship, ship.row, ship.col)
-  //     }
-  //   });
-  // }
-
   selectShip(ship: Ship): void {
     if (this._previous) {
       let prev = this._previous;
       prev.selected = false;
       prev.ghost.clear();
-
-      // if (prev.cells.length === prev.size) {
-      //   prev.placed = true;
-      // }
 
       // if a previously selected ship is placed on the board
       // make sure it's current state is updated in the database

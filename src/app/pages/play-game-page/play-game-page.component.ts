@@ -2,13 +2,12 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MatSnackBar, MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { combineLatest, partition, Subject } from 'rxjs';
-import { switchMap, switchMapTo, take, tap } from 'rxjs/operators';
+import { take, tap } from 'rxjs/operators';
 import { Board } from 'src/app/models/board';
 import { Ship } from 'src/app/models/ship';
 import { Shot } from 'src/app/models/shot';
 import { BoardService, PendingShot, ShotAlert } from 'src/app/services/board.service';
-import { DatabaseService, GameConnection } from 'src/app/services/database.service';
-import { GameService } from 'src/app/services/game.service';
+import { DatabaseService } from 'src/app/services/database.service';
 
 @Component({
   selector: 'app-play-game-page',
@@ -41,7 +40,6 @@ export class PlayGamePageComponent implements OnInit {
     private router: Router, 
     private db: DatabaseService, 
     private bs: BoardService,
-    private gs: GameService,
     private snackBar: MatSnackBar
   ) { }
 
@@ -186,7 +184,7 @@ export class PlayGamePageComponent implements OnInit {
           }
         );
 
-        this.gs.getOtherShots().subscribe(
+        this.db.getOtherShots().subscribe(
           (shots: Shot[]) => { 
             shots.forEach(shot => {
               checkToHandle(this._otherShots, boards[0], shot);
@@ -201,7 +199,7 @@ export class PlayGamePageComponent implements OnInit {
           }
         );
 
-        this.gs.getCurrentShots().pipe(take(1)).subscribe(
+        this.db.getCurrentShots().pipe(take(1)).subscribe(
           (shots: Shot[]) => { 
             shots.forEach(shot => {
               checkToHandle(this._currentShots, boards[1], shot);
@@ -220,61 +218,6 @@ export class PlayGamePageComponent implements OnInit {
       }
     )
   }
-
-  // setBoards(): void {
-  //   const checkToHandle = (list: Shot[], board: Board, shot: Shot) => {
-  //     if (list.every(s => !shot.check(s))) {
-  //       list.push(shot);
-  //       this.bs.handleShot(board, shot);
-  //     }
-  //   }
-
-  //   combineLatest([
-  //     this.bs.getBoard(),
-  //     this.bs.getBoard()
-  //   ]).subscribe(
-  //     (boards: Board[]) => {
-
-  //       this.bs.loadCurrentShips(boards[0]);
-  //       this.otherBoard = boards[0];
-
-  //       this.gs.getOtherShots().subscribe(
-  //         (shots: Shot[]) => { 
-  //           shots.forEach(shot => {
-  //             checkToHandle(this._otherShots, boards[0], shot);
-  //           });
-
-  //           if (!this.otherShotsLoaded) {
-  //             this.otherAlerts.subscribe(
-  //               sa => { this.handleAlert(sa, false)}
-  //             );
-  //           }
-  //           this.otherShotsLoaded = true;
-  //         }
-  //       );
-
-
-  //       this.bs.loadOtherShips(boards[1]);
-  //       this.playerBoard = boards[1];
-        
-  //       this.gs.getCurrentShots().pipe(take(1)).subscribe(
-  //         (shots: Shot[]) => { 
-  //           shots.forEach(shot => {
-  //             checkToHandle(this._currentShots, boards[1], shot);
-  //           });
-
-  //           if (!this.currentShotsLoaded) {
-  //             this.currentAlerts.subscribe(
-  //               sa => { this.handleAlert(sa, true)}
-  //             );
-  //           }
-  //           this.currentShotsLoaded = true;
-  //         }
-  //       );
-  //     }
-  //   );
-
-  // }
 
   gotoPlacement(): void {
     this.db.currentGame$.pipe(take(1))

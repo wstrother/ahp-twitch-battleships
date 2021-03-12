@@ -2,30 +2,9 @@ import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@
 import { combineLatest, fromEvent, Subscription } from 'rxjs';
 import { switchMapTo, tap } from 'rxjs/operators';
 import { Board } from 'src/app/models/board';
-import { Cell } from 'src/app/models/cell';
 import { Ghost, Ship } from 'src/app/models/ship';
 import { BoardService } from 'src/app/services/board.service';
 import { DatabaseService } from 'src/app/services/database.service';
-import { GameService } from 'src/app/services/game.service';
-
-
-// class boundingBox {
-//   top: number;
-//   left: number;
-//   right: number;
-//   bottom: number;
-//   width: number;
-//   height: number;
-
-//   constructor(element: any) {
-//     this.top = element.offsetTop;
-//     this.left = element.offsetLeft;
-//     this.right = element.offsetLeft + element.offsetWidth;
-//     this.bottom = element.offsetTop + element.offsetHeight;
-//     this.width = this.right - this.left;
-//     this.height = this.bottom - this.top;
-//   }
-// }
 
 
 @Component({
