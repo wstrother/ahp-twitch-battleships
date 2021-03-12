@@ -11,14 +11,14 @@ import { DatabaseService } from './database.service';
   providedIn: 'root'
 })
 export class GameService {
-  private currentShips: ReplaySubject<Ship[]> = new ReplaySubject<Ship[]>(1);
-  private otherShips: ReplaySubject<Ship[]> = new ReplaySubject<Ship[]>(1);
+  // private currentShips: ReplaySubject<Ship[]> = new ReplaySubject<Ship[]>(1);
+  // private otherShips: ReplaySubject<Ship[]> = new ReplaySubject<Ship[]>(1);
 
-  private _currentShots: Shot[] = [];
-  private currentShotList: ReplaySubject<Shot[]> = new ReplaySubject<Shot[]>(1);
+  // private _currentShots: Shot[] = [];
+  // private currentShotList: ReplaySubject<Shot[]> = new ReplaySubject<Shot[]>(1);
 
-  private _otherShots: Shot[] = [];
-  private otherNewShot: ReplaySubject<Shot> = new ReplaySubject<Shot>();
+  // private _otherShots: Shot[] = [];
+  // private otherNewShot: ReplaySubject<Shot> = new ReplaySubject<Shot>();
 
   constructor(private db: DatabaseService) {
     // this.setCurrentShips();
@@ -27,16 +27,15 @@ export class GameService {
   }
 
   // setShots(): void {
-  //   console.log("setting up shots subscription...");
 
   //   combineLatest([
-  //     this.db.getCurrentGame(),
-  //     this.db.getPlayerKey()
+  //     this.db.currentGame$,
+  //     this.db.userId$
   //   ]).pipe(take(1)).subscribe(
-  //     ([game, playerKey]) => {
+  //     ([game, uid]) => {
   //       this.db.getGameShots(game.key).subscribe(
   //         (shots) => { 
-  //           this.filterShots(shots, playerKey); 
+  //           this.filterShots(shots, uid); 
 
   //         }
   //       )
@@ -49,7 +48,6 @@ export class GameService {
   //     if (list.every(s => !shot.check(s))) {list.push(shot)}
   //   }
 
-  //   console.log("filtering shots");
   //   shots.forEach(shot => {
   //     if (shot.playerKey === playerKey) {
   //       checkToAdd(this._currentShots, shot);
@@ -59,33 +57,33 @@ export class GameService {
   //       this.otherNewShot.next(shot);
   //     }
 
-  //   this.currentShotList.next(this._currentShots);
+  //     this.currentShotList.next(this._currentShots);
   //   });
   // }
 
-  // getOtherShots(): Observable<Shot[]> {
-  //   return combineLatest([
-  //     this.db.getCurrentGame(),
-  //     this.db.getPlayerKey()
-  //   ]).pipe(
-  //     switchMap(([game, playerKey]) => this.db.getGameShots(game.key)
-  //       .pipe(
-  //         map(shots => shots.filter(shot => shot.playerKey !== playerKey))
-  //       )
-  //   ));
-  // }
+  getOtherShots(): Observable<Shot[]> {
+    return combineLatest([
+      this.db.currentGame$,
+      this.db.userId$
+    ]).pipe(
+      switchMap(([game, uid]) => this.db.getGameShots(game.key)
+        .pipe(
+          map(shots => shots.filter(shot => shot.player !== uid))
+        )
+    ));
+  }
 
-  // getCurrentShots(): Observable<Shot[]> {
-  //   return combineLatest([
-  //     this.db.getCurrentGame(),
-  //     this.db.getPlayerKey()
-  //   ]).pipe(
-  //     switchMap(([game, playerKey]) => this.db.getGameShots(game.key)
-  //       .pipe(
-  //         map(shots => shots.filter(shot => shot.playerKey === playerKey))
-  //       )
-  //   ));
-  // }
+  getCurrentShots(): Observable<Shot[]> {
+    return combineLatest([
+      this.db.currentGame$,
+      this.db.userId$
+    ]).pipe(
+      switchMap(([game, uid]) => this.db.getGameShots(game.key)
+        .pipe(
+          map(shots => shots.filter(shot => shot.player === uid))
+        )
+    ));
+  }
 
   // getCurrentShips(): Observable<Ship[]> {
   //   return this.currentShips.asObservable().pipe(take(1));

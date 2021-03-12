@@ -27,8 +27,12 @@ export class DatabaseService {
   private _userId: ReplaySubject<string> = new ReplaySubject(1);
   private _gameKey: ReplaySubject<string> = new ReplaySubject(1);
   private _currentGame: ReplaySubject<Game> = new ReplaySubject(1);
-  private _gameConnection: ReplaySubject<GameConnection> = new ReplaySubject(1);
+  // private _gameConnection: ReplaySubject<GameConnection> = new ReplaySubject(1);
   private _errorMessage: ReplaySubject<string> = new ReplaySubject(1);
+
+  playerShips$: Observable<Ship[]>;
+  otherShips$: Observable<Ship[]>;
+  // shots$: Observable<Shot[]>;
 
   private shipsRef: AngularFireList<any>;
   private gamesRef: AngularFireList<any>;
@@ -75,15 +79,19 @@ export class DatabaseService {
 
     // connect the user to the current game
     this.connectPlayer();
+
+    // set up observables of the players and opponent's ships and shots
+    this.playerShips$ = this.getPlayerShips();
+    this.otherShips$ = this.getOtherShips();
   }
   
   get currentGame$(): Observable<Game> {
     return this._currentGame.asObservable();
   }
 
-  get gameConnection$(): Observable<GameConnection> {
-    return this._gameConnection.asObservable();
-  }
+  // get gameConnection$(): Observable<GameConnection> {
+  //   return this._gameConnection.asObservable();
+  // }
 
   get errorMessage$(): Observable<string> {
     return this._errorMessage.asObservable();
@@ -119,7 +127,7 @@ export class DatabaseService {
 
   }
 
-  getCurrentShips(): Observable<Ship[]> {
+  getPlayerShips(): Observable<Ship[]> {
     return this.userId$.pipe(
       switchMap((id: string) => {
 
@@ -202,6 +210,32 @@ export class DatabaseService {
         game.setReady(playerKey, this.gamesRef);
       }
     )
+  }
+
+  getGameShots(gameKey: string): Observable<Shot[]> {
+    const gameFilter = (ref: DatabaseReference) => ref
+      .orderByChild("gameKey").equalTo(gameKey);
+    
+    return this.af.list("/shots", gameFilter).snapshotChanges()
+      .pipe(map(
+        shots => shots.map(s => {
+          return Shot.getFromSnapshot(s)
+        })
+      )
+    );
+  }
+
+  fireShot(row: number, col: number): Observable<Shot> {
+    return combineLatest([
+      this.currentGame$,
+      this.userId$
+    ]).pipe(
+      take(1),
+      switchMap(([game, uid]) => {
+        let shot = new Shot(row, col, game.key, uid);
+        return shot.create(this.shotsRef);
+        })
+      );
   }
 
 }

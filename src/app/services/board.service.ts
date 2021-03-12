@@ -45,9 +45,9 @@ export class BoardService {
     this.selected$ = this._selected.asObservable();
   }
 
-  // getPendingShot(): Observable<null | PendingShot> {
-  //   return this.pendingShot.asObservable();
-  // }
+  getPendingShot(): Observable<null | PendingShot> {
+    return this.pendingShot.asObservable();
+  }
 
   getBoard(): Observable<Board> {
     return this.db.currentGame$.pipe(
@@ -113,51 +113,51 @@ export class BoardService {
     this._previous = ship;
   }
 
-  // fireShot(board: Board, row: number, col: number): Observable<PendingShot> {
-  //   let cell = board.getCell(row, col);
+  fireShot(board: Board, row: number, col: number): Observable<PendingShot> {
+    let cell = board.getCell(row, col);
 
-  //   const handlePending = (p: PendingShot) => {
-  //     this.pendingShot.next(p);
-  //     if (p.time === 0) {
+    const handlePending = (p: PendingShot) => {
+      this.pendingShot.next(p);
+      if (p.time === 0) {
 
-  //       this.db.fireShot(row, col).subscribe(
-  //         (shot: Shot) => {
-  //           this.handleShot(board, shot);
-  //         }
-  //       );
+        this.db.fireShot(row, col).subscribe(
+          (shot: Shot) => {
+            this.handleShot(board, shot);
+          }
+        );
 
-  //     }
-  //   }
+      }
+    }
     
-  //   let pending$ = timer(0, 1000).pipe(
-  //     take(4),
-  //     finalize(() => { this.pendingShot.next(null); }),
-  //     map((n: number): PendingShot => {
-  //       return {cell, time: 3 - n};
-  //     }),
-  //     tap(handlePending)
-  //   );
+    let pending$ = timer(0, 1000).pipe(
+      take(4),
+      finalize(() => { this.pendingShot.next(null); }),
+      map((n: number): PendingShot => {
+        return {cell, time: 3 - n};
+      }),
+      tap(handlePending)
+    );
 
-  //   return pending$;
-  // }
+    return pending$;
+  }
 
-  // handleShot(board: Board, shot: Shot): void {
-  //   let cell = board.getCell(shot.row, shot.col);
-  //   cell.shot = true;
-  //   this.handleAlert(cell, shot);
-  // }
+  handleShot(board: Board, shot: Shot): void {
+    let cell = board.getCell(shot.row, shot.col);
+    cell.shot = true;
+    this.handleAlert(cell, shot);
+  }
 
-  // handleAlert(cell: Cell, shot: Shot): void {
-  //   let hit = cell.hasShip;
-  //   let sink = false;
-  //   if (hit) {
-  //     sink = cell.ship.isSunk;
-  //   }
+  handleAlert(cell: Cell, shot: Shot): void {
+    let hit = cell.hasShip;
+    let sink = false;
+    if (hit) {
+      sink = cell.ship.isSunk;
+    }
 
-  //   this.alerts.next({shot, cell, hit, sink});
-  // }
+    this.alerts.next({shot, cell, hit, sink});
+  }
 
-  // getAlerts(): Observable<ShotAlert> {
-  //   return this.alerts.asObservable();
-  // }
+  getAlerts(): Observable<ShotAlert> {
+    return this.alerts.asObservable();
+  }
 }

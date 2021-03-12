@@ -5,7 +5,7 @@ export class Shot extends DbItem {
         public row?: number,
         public col?: number,
         public gameKey?: string,
-        public playerKey?: string
+        public player?: string
     ) {
         super()
     }

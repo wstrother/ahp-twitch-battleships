@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MatSnackBar, MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { combineLatest, partition, Subject } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { switchMap, switchMapTo, take, tap } from 'rxjs/operators';
 import { Board } from 'src/app/models/board';
 import { Ship } from 'src/app/models/ship';
 import { Shot } from 'src/app/models/shot';
@@ -46,110 +46,180 @@ export class PlayGamePageComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // let boardsSet = false;
+    let boardsSet = false;
 
-    // const handleConnection = ({game, connected, playerKey}: GameConnection) => {
+    const handleConnection = ([uid, game]) => {
 
-    //   let ready = game.getReady(playerKey);
-    //   let otherReady = game.otherReady(playerKey);
+      let ready = game.getReady(uid);
+      let otherReady = game.otherReady(uid);
 
-    //   if (connected && ready) {
+      if (ready) {
 
-    //     if (!boardsSet) {
-    //       this.setBoards();
-    //       boardsSet = true;
-    //     }
+        if (!boardsSet) {
+          this.setBoards();
+          boardsSet = true;
+        }
         
-    //     if (!otherReady) {
-    //       this.pendingMessage = "Waiting for opponent to get ready...";
-    //     }
+        if (!otherReady) {
+          this.pendingMessage = "Waiting for opponent to place ships...";
+        }
         
-    //     if (otherReady) {
-    //       this.pendingMessage = "";
-    //       this.gameReady = true;
-    //       this.setAlerts();
-    //       this.setPending();
-    //     }
-    //   }
+        if (otherReady) {
+          this.pendingMessage = "";
+          this.gameReady = true;
+          this.setAlerts();
+          this.setPending();
+        }
+      }
       
-    //   if (connected && !ready) {
-    //     this.gotoPlacement();
-    //   }
+      else {
+        this.gotoPlacement();
+      }
 
-    // }
+    }
 
-    // this.db.onGameConnection().subscribe(
-    //     handleConnection
-    // );
+    combineLatest([
+      this.db.userId$,
+      this.db.currentGame$
+    ]).subscribe(
+        handleConnection
+    );
   }
 
-  // get totalShots(): number {
-  //   let total = 0;
+  get totalShots(): number {
+    let total = 0;
 
-  //   if (this.playerBoard) {
-  //     this.playerBoard.cells.forEach(
-  //       (cell) => {
-  //         if (cell.shot) { total++; }
-  //       }
-  //     )
-  //   }
+    if (this.playerBoard) {
+      this.playerBoard.cells.forEach(
+        (cell) => {
+          if (cell.shot) { total++; }
+        }
+      )
+    }
 
-  //   return total;
-  // }
+    return total;
+  }
 
-  // setFilter(event: any): void {
-  //   if (event.code === "Escape") {
-  //     this.filter = "";
-  //   }
+  setFilter(event: any): void {
+    if (event.code === "Escape") {
+      this.filter = "";
+    }
 
-  //   this.playerBoard.filterCells(this.filter);
-  // }
+    this.playerBoard.filterCells(this.filter);
+  }
 
-  // setPending(): void {
-  //   this.bs.getPendingShot().subscribe(
-  //     (p: null | PendingShot) => {
-  //       if (p) {
-  //         this.pendingMessage = `Firing at ${p.cell.data.name}`;
-  //         this.pendingTime = p.time;
-  //         this.cancelMessage = "(Click to cancel)"
-  //       } else {
-  //         this.pendingMessage = "";
-  //       }
-  //     }
-  //   )
-  // }
+  setPending(): void {
+    this.bs.getPendingShot().subscribe(
+      (p: null | PendingShot) => {
+        if (p) {
+          this.pendingMessage = `Firing at ${p.cell.data.name}`;
+          this.pendingTime = p.time;
+          this.cancelMessage = "(Click to cancel)"
+        } else {
+          this.pendingMessage = "";
+        }
+      }
+    )
+  }
 
-  // setAlerts(): void {
-  //   this.db.getPlayerKey().pipe(take(1))
-  //     .subscribe(
-  //       (playerKey: string) => {
-  //         const [current, other] = partition(this.bs.getAlerts(),
-  //           (sa: ShotAlert) => { return sa.shot.playerKey === playerKey }
-  //         )
+  setAlerts(): void {
+    this.db.userId$.pipe(take(1))
+      .subscribe(
+        (playerKey: string) => {
+          const [current, other] = partition(this.bs.getAlerts(),
+            (sa: ShotAlert) => { return sa.shot.player === playerKey }
+          )
 
-  //         current.subscribe((sa: ShotAlert) => { 
-  //           this.currentAlerts.next(sa); 
-  //         });
-  //         other.subscribe((sa: ShotAlert) => { 
-  //           this.otherAlerts.next(sa); 
-  //         });
-  //       }
-  //     )
-  // }
+          current.subscribe((sa: ShotAlert) => { 
+            this.currentAlerts.next(sa); 
+          });
+          other.subscribe((sa: ShotAlert) => { 
+            this.otherAlerts.next(sa); 
+          });
+        }
+      )
+  }
 
-  // handleAlert(shotAlert: ShotAlert, self: boolean): void {
-  //   let open = true;
-  //   if (self && !shotAlert.hit) {
-  //     open = false;
-  //   }
+  handleAlert(shotAlert: ShotAlert, self: boolean): void {
+    let open = true;
+    if (self && !shotAlert.hit) {
+      open = false;
+    }
 
-  //   if (open) {
-  //     this.snackBar.openFromComponent(ShotAlertComponent, {
-  //       duration: 3000,
-  //       data: {shotAlert, self}
-  //     });
-  //   }
-  // }
+    if (open) {
+      this.snackBar.openFromComponent(ShotAlertComponent, {
+        duration: 3000,
+        data: {shotAlert, self}
+      });
+    }
+  }
+
+  setBoards(): void {
+
+    const checkToHandle = (list: Shot[], board: Board, shot: Shot) => {
+      if (list.every(s => !shot.check(s))) {
+        list.push(shot);
+        this.bs.handleShot(board, shot);
+      }
+    }
+ 
+    combineLatest([
+      this.bs.getBoard(),
+      this.bs.getBoard()
+    ]).pipe(
+      tap((boards: Board[]) => {
+        this.otherBoard = boards[0];
+        this.playerBoard = boards[1];
+      })
+    ).subscribe(
+      (boards: Board[]) => {
+
+        this.db.playerShips$.pipe(take(1))
+          .subscribe((ships) => {
+            this.otherBoard.placeShips(ships);
+          }
+        );
+
+        this.db.otherShips$.pipe(take(1))
+          .subscribe((ships) => {
+            this.playerBoard.placeShips(ships);
+          }
+        );
+
+        this.gs.getOtherShots().subscribe(
+          (shots: Shot[]) => { 
+            shots.forEach(shot => {
+              checkToHandle(this._otherShots, boards[0], shot);
+            });
+
+            if (!this.otherShotsLoaded) {
+              this.otherAlerts.subscribe(
+                sa => { this.handleAlert(sa, false)}
+              );
+            }
+            this.otherShotsLoaded = true;
+          }
+        );
+
+        this.gs.getCurrentShots().pipe(take(1)).subscribe(
+          (shots: Shot[]) => { 
+            shots.forEach(shot => {
+              checkToHandle(this._currentShots, boards[1], shot);
+            });
+
+            if (!this.currentShotsLoaded) {
+              this.currentAlerts.subscribe(
+                sa => { this.handleAlert(sa, true)}
+              );
+            }
+            this.currentShotsLoaded = true;
+          }
+        );
+
+
+      }
+    )
+  }
 
   // setBoards(): void {
   //   const checkToHandle = (list: Shot[], board: Board, shot: Shot) => {
@@ -206,12 +276,12 @@ export class PlayGamePageComponent implements OnInit {
 
   // }
 
-  // gotoPlacement(): void {
-  //   this.db.getCurrentGame().pipe(take(1))
-  //     .subscribe(game => {
-  //       this.router.navigate(["/place"], {queryParams: {'game': game.key}});
-  //     });
-  // }
+  gotoPlacement(): void {
+    this.db.currentGame$.pipe(take(1))
+      .subscribe(game => {
+        this.router.navigate(["/place"], {queryParams: {'game': game.key}});
+      });
+  }
 }
 
 @Component({

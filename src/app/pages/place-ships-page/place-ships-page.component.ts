@@ -7,6 +7,8 @@ import { switchMap, take, tap } from 'rxjs/operators';
 import { DatabaseService, GameConnection } from 'src/app/services/database.service';
 import { GameService } from 'src/app/services/game.service';
 import { MatDialog } from '@angular/material/dialog';
+import { combineLatest, Observable } from 'rxjs';
+import { Game } from 'src/app/models/game';
 
 
 @Component({
@@ -26,21 +28,17 @@ export class PlaceShipsPageComponent implements OnInit {
     private router: Router, 
     private db: DatabaseService, 
     private bs: BoardService,
-    // private gs: GameService,
     private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
-    // this.setShips();
-    // this.setBoard();
-
     this.bs.getBoard()
       .pipe(
         tap((board: Board) => { 
           this.board = board; 
         }),
         
-        switchMap((board: Board) => this.db.getCurrentShips().pipe(
+        switchMap((board: Board) => this.db.playerShips$.pipe(
           take(1),
 
           tap((ships: Ship[]) => { 
@@ -52,6 +50,17 @@ export class PlaceShipsPageComponent implements OnInit {
         (ships: Ship[]) => {
           this.ships = ships;
         }
+    );
+
+    combineLatest([
+      this.db.userId$,
+      this.db.currentGame$
+    ]).subscribe(
+      ([uid, game]) => {
+        if (game.getReady(uid)) {
+          this.gotoGame();
+        }
+      }
     );
   }
 

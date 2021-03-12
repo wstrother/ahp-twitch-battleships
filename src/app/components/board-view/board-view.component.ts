@@ -1,10 +1,11 @@
 import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { fromEvent, Subscription } from 'rxjs';
+import { combineLatest, fromEvent, Subscription } from 'rxjs';
 import { switchMapTo, tap } from 'rxjs/operators';
 import { Board } from 'src/app/models/board';
 import { Cell } from 'src/app/models/cell';
 import { Ghost, Ship } from 'src/app/models/ship';
 import { BoardService } from 'src/app/services/board.service';
+import { DatabaseService } from 'src/app/services/database.service';
 import { GameService } from 'src/app/services/game.service';
 
 
@@ -46,7 +47,7 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('boardElement') el: any;
 
-  constructor(private bs: BoardService, private gs: GameService) { }
+  constructor(private bs: BoardService, private db: DatabaseService) { }
 
   getGridStyle(): string {
     return `repeat(${this.board.width}, fit-content(100%))`
@@ -60,12 +61,17 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
       this.setUpPlacement();
     }
 
-    // if (this.fireable) {
-    //   this.gs.onOtherReady().subscribe(
-    //     () => { this.setUpFiring(); }
-    //   )
+    if (this.fireable) {
+      combineLatest([
+        this.db.userId$,
+        this.db.currentGame$
+      ]).subscribe(
+        ([uid, game]) => {
+          if (game.otherReady(uid)) { this.setUpFiring(); }
+        }
+      );
+    }
       
-    // }
   }
 
   ngOnDestroy(): void {
@@ -150,53 +156,53 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  // setUpFiring(): void {
+  setUpFiring(): void {
 
-  //   this.setEventMethod(
-  //     'click', (e) => { this.clickToFire(e) }
-  //   );
+    this.setEventMethod(
+      'click', (e) => { this.clickToFire(e) }
+    );
 
-  //   this.setEventMethod(
-  //     'contextmenu', (e) => { this.clickToMark(e) }
-  //   );
-  // }
+    this.setEventMethod(
+      'contextmenu', (e) => { this.clickToMark(e) }
+    );
+  }
 
-  // clickToFire(event: any): void {
-  //   this.cancelEventSubs();
-  //   this.board.disableAll();
+  clickToFire(event: any): void {
+    this.cancelEventSubs();
+    this.board.disableAll();
     
-  //   let {row, col} = this.getCoordinates(event.x, event.y);
-  //   let pending$ = this.bs.fireShot(this.board, row, col);
+    let {row, col} = this.getCoordinates(event.x, event.y);
+    let pending$ = this.bs.fireShot(this.board, row, col);
     
-  //   const onClick = fromEvent(document, 'click');
-  //   const resetEvents = () => {
-  //     this.cancelEventSubs();
-  //     this.setUpFiring();
-  //     this.board.enableAll();
-  //   }
+    const onClick = fromEvent(document, 'click');
+    const resetEvents = () => {
+      this.cancelEventSubs();
+      this.setUpFiring();
+      this.board.enableAll();
+    }
     
     
-  //   this.eventSubs.push(
+    this.eventSubs.push(
       
-  //     pending$.pipe(
-  //       tap((p) => {
-  //         if (p.time === 0) { resetEvents(); }
-  //       }),
-  //       switchMapTo(onClick)
-  //     ).subscribe(resetEvents)
+      pending$.pipe(
+        tap((p) => {
+          if (p.time === 0) { resetEvents(); }
+        }),
+        switchMapTo(onClick)
+      ).subscribe(resetEvents)
 
-  //   );
-  // }
+    );
+  }
 
-  // clickToMark(event: any): void {
+  clickToMark(event: any): void {
 
-  //   let {row, col} = this.getCoordinates(event.x, event.y);
-  //   let cell = this.board.getCell(row, col);
+    let {row, col} = this.getCoordinates(event.x, event.y);
+    let cell = this.board.getCell(row, col);
 
-  //   if (cell) {
-  //     cell.handleMark();
-  //   }
-  // }
+    if (cell) {
+      cell.handleMark();
+    }
+  }
 
   placeSelectedShip(event: any, ship: Ship): void {
     this.placeShip(event, ship);
