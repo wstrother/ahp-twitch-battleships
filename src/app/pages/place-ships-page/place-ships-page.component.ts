@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { BoardService } from 'src/app/services/board.service';
 import { Board } from 'src/app/models/board';
 import { Ship } from 'src/app/models/ship';
-import { take } from 'rxjs/operators';
+import { switchMap, take, tap } from 'rxjs/operators';
 import { DatabaseService, GameConnection } from 'src/app/services/database.service';
 import { GameService } from 'src/app/services/game.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -26,48 +26,48 @@ export class PlaceShipsPageComponent implements OnInit {
     private router: Router, 
     private db: DatabaseService, 
     private bs: BoardService,
-    private gs: GameService,
+    // private gs: GameService,
     private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
-    // const handleConnection = ({game, connected, playerKey}: GameConnection) => {
+    // this.setShips();
+    // this.setBoard();
 
-    //   let ready = game.getReady(playerKey);
+    this.bs.getBoard()
+      .pipe(
+        tap((board: Board) => { 
+          this.board = board; 
+        }),
+        
+        switchMap((board: Board) => this.db.getCurrentShips().pipe(
+          take(1),
 
-    //   if (connected && !ready) {
-
-    //     this.setShips();
-
-    //     this.setBoard();
-
-    //   }
-      
-    //   if (connected && ready) {
-    //     this.gotoGame();
-    //   }
-
-    // }
-
-    // this.db.onGameConnection().subscribe(
-    //     handleConnection,
-    //     (err) => {console.log(err.name)}
-    // );
+          tap((ships: Ship[]) => { 
+            board.placeShips(ships); 
+          })
+        ))
+      )
+      .subscribe(
+        (ships: Ship[]) => {
+          this.ships = ships;
+        }
+    );
   }
 
-  // openDialog(): void {
-  //   let dialogRef = this.dialog.open(StartGameDialogComponent);
+  openDialog(): void {
+    let dialogRef = this.dialog.open(StartGameDialogComponent);
 
-  //   dialogRef.afterClosed().subscribe(
-  //     (result: any) => {
-  //       if (result) { this.startGame(); }
-  //     }
-  //   );
-  // }
+    dialogRef.afterClosed().subscribe(
+      (result: any) => {
+        if (result) { this.startGame(); }
+      }
+    );
+  }
 
   // setShips(): void {
-  //   this.gs.getCurrentShips().subscribe(
-  //     (ships) => { this.ships = ships }
+  //   this.db.getCurrentShips().pipe(take(1)).subscribe(
+  //     (ships) => { this.ships = ships; }
   //   )
   // }
 
@@ -80,17 +80,17 @@ export class PlaceShipsPageComponent implements OnInit {
   //   );
   // }
 
-  // startGame(): void {
-  //   this.db.setReady();
-  //   this.gotoGame();
-  // }
+  startGame(): void {
+    this.db.setReady();
+    this.gotoGame();
+  }
 
-  // gotoGame(): void {
-  //   this.db.getCurrentGame().pipe(take(1))
-  //     .subscribe(game => {
-  //       this.router.navigate(["/play"], {queryParams: {'game': game.key}});
-  //     });
-  // }
+  gotoGame(): void {
+    this.db.currentGame$.pipe(take(1))
+      .subscribe(game => {
+        this.router.navigate(["/play"], {queryParams: {'game': game.key}});
+      });
+  }
 }
 
 @Component({

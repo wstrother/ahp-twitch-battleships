@@ -18,28 +18,28 @@ export class BoardCellComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  // getCellSize(): string {
-  //   return `${this.bs.cellSize}px`;
-  // }
+  getCellSize(): string {
+    return `${this.bs.cellSize}px`;
+  }
 
-  // getBgImage(): string {
-  //   if (this.cell.data) {
-  //     return `url("${this.cell.data.src}")`;
-  //   } else {
-  //     return 'none';
-  //   }
-  // }
+  getBgImage(): string {
+    if (this.cell.data) {
+      return `url("${this.cell.data.src}")`;
+    } else {
+      return 'none';
+    }
+  }
 
-  // getTooltip(): string | null {
-  //   if (this.cell.data) {
-  //     return this.cell.data.name;
-  //   } else {
-  //     return null
-  //   }
-  // }
+  getTooltip(): string | null {
+    if (this.cell.data) {
+      return this.cell.data.name;
+    } else {
+      return null
+    }
+  }
 
-  // handleClick(event: any): void {
-  //   event.preventDefault();
-  //   this.cellClicked.emit(event);
-  // }
+  handleClick(event: any): void {
+    event.preventDefault();
+    this.cellClicked.emit(event);
+  }
 }

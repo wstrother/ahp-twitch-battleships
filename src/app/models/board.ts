@@ -70,6 +70,14 @@ export class Board {
         }
     }
 
+    placeShips(ships: Ship[]): void {
+        ships.forEach(ship => {
+            if (ship.placed) {
+              this.setShipPosition(ship, ship.row, ship.col)
+            }
+        });
+    }
+
     setShipPosition(ship: Ship, row: number, col: number): void {
         let cells = [];
         let currentCell = null;

@@ -59,6 +59,7 @@ export class Ship extends DbItem {
             c.ship = this;
             this.cells.push(c);
         });
+        this.placed = true;
     }
 
     clear(): void {
@@ -66,6 +67,8 @@ export class Ship extends DbItem {
             c.ship = null;
         })
 
+        console.log("clearing");
+        this.placed = false;
         this.cells.length = 0;
     }
 

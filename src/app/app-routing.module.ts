@@ -10,7 +10,7 @@ const routes: Routes = [
   {path: 'place', component: PlaceShipsPageComponent},
   {path: 'play', component: PlayGamePageComponent},
   {path: 'new', component: NewGamePageComponent},
-  {path: '', redirectTo: '/test', pathMatch: 'full'},
+  {path: '', redirectTo: '/new', pathMatch: 'full'},
   {path: 'home', component: HomePageComponent},
   {path: 'test', component: TestDbPageComponent}
 ];

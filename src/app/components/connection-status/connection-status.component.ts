@@ -21,7 +21,7 @@ export class ConnectionStatusComponent implements OnInit {
   constructor(private db: DatabaseService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    this.db.getUserId().subscribe(
+    this.db.userId$.subscribe(
       (uid: string) => {
         console.log("uid:", uid);
       }
@@ -35,8 +35,8 @@ export class ConnectionStatusComponent implements OnInit {
           this.db.setGameKey(gameKey);
 
           return combineLatest([
-            this.db.getCurrentGame(),
-            this.db.getUserId()
+            this.db.currentGame$,
+            this.db.userId$
           ])
         })
       )
@@ -44,48 +44,12 @@ export class ConnectionStatusComponent implements OnInit {
         ([game, id]) => {
           this.title = game.name;
           this.setStatus(game, id);
-        },
-        () => { this.errorMessage = "Error connecting to game!"; }
+        }
     );
 
-      
-
-    // const handleError = (err: Error) => {
-    //   this.errorMessage = {
-    //     NoGameError: `Sorry, but there was an error finding your game. Please ensure you copied the URL correctly.`,
-    //     FullGameError: `Sorry, but this game already has two players!`
-    //   }[err.name];
-    // }
-
-    // const handleConnection = (
-    //   {game, playerKey, connected}: GameConnection
-    // )  => {
-    //   if (connected) {
-    //     this.title = game.name;
-
-    //     // this.getConnectionStatus(playerKey).subscribe(
-    //     //   (status: ConnectionStatus) => {
-    //     //     this.playerNum = status.playerNum
-
-    //     //     if (!status.otherConnected) { 
-    //     //       this.otherStage = 1
-    //     //     }
-    //     //     if (status.otherConnected && !status.otherReady) {
-    //     //       this.otherStage = 2;
-    //     //     }
-    //     //     if (status.otherReady) {
-    //     //       this.otherStage = 3;
-    //     //     }
-
-    //     //   }
-    //     // )
-    //   }
-    // }
-
-    // this.db.onGameConnection().subscribe(
-    //   handleConnection,
-    //   handleError
-    // );
+    this.db.errorMessage$.subscribe(
+      (msg: string) => { this.errorMessage = msg; }
+    )
   }
 
   getGameParam(): Observable<string> {
@@ -95,7 +59,7 @@ export class ConnectionStatusComponent implements OnInit {
   }
 
   setStatus(game: Game, id: string): void {
-    let status = game.getConnectionStatus(id);
+    let status: ConnectionStatus = game.getConnectionStatus(id);
 
     this.playerNum = status.playerNum
 
