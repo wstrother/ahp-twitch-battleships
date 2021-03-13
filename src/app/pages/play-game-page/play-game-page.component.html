@@ -11,6 +11,7 @@
                 [placeable]="false"
                 [fireable]="gameReady"
                 [showShips]="false"
+                (clearFilter)="clearFilter()"
                 ></app-board-view>
 
                 <div class="pending-panel" *ngIf="pendingMessage">
@@ -30,8 +31,8 @@
                 <div class="board-ui">
                     <mat-form-field>
                         <mat-label>Filter</mat-label>
-                        <input matInput type="text" [(ngModel)]="filter" (keyup)="setFilter($event)" (focusout)="filter=''">
-                        <button mat-button *ngIf="filter" matSuffix mat-icon-button aria-label="Clear" (click)="filter=''">
+                        <input matInput type="text" [(ngModel)]="filter" (keyup)="setFilter($event)">
+                        <button mat-button *ngIf="filter" matSuffix mat-icon-button aria-label="Clear" (click)="clearFilter()">
                           <mat-icon>close</mat-icon>
                         </button>
                     </mat-form-field>

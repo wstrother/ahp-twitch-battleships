@@ -2,8 +2,6 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Cell } from 'src/app/models/cell';
 import { BoardService } from 'src/app/services/board.service';
 
-const SPRITES_REPO = "https://raw.githubusercontent.com/msikma/pokesprite/master/pokemon-gen8/regular/";
-
 @Component({
   selector: 'app-board-cell',
   templateUrl: './board-cell.component.html',
@@ -24,11 +22,9 @@ export class BoardCellComponent implements OnInit {
     return `${this.bs.cellSize}px`;
   }
 
-  getImgSrc(): string {
+  getBgImage(): string {
     if (this.cell.data) {
-      let name = this.cell.data.name.toLowerCase();
-      name = name.replace(/ /g, '-');
-      return `${SPRITES_REPO}${name}.png`;
+      return `url(${this.cell.data.src})`;
     } else {
       return 'none';
     }

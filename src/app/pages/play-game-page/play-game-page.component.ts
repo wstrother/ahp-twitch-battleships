@@ -106,6 +106,11 @@ export class PlayGamePageComponent implements OnInit {
     this.playerBoard.filterCells(this.filter);
   }
 
+  clearFilter(): void {
+    this.filter = "";
+    this.playerBoard.enableAll();
+  }
+
   setPending(): void {
     this.bs.getPendingShot().subscribe(
       (p: null | PendingShot) => {

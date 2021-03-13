@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild, EventEmitter, Output } from '@angular/core';
 import { combineLatest, fromEvent, Subscription } from 'rxjs';
 import { switchMapTo, tap } from 'rxjs/operators';
 import { Board } from 'src/app/models/board';
@@ -14,6 +14,7 @@ import { DatabaseService } from 'src/app/services/database.service';
 })
 export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() board: Board;
+  @Output() clearFilter: EventEmitter<null> = new EventEmitter();
 
   @Input() showShips: boolean = true;
   gameStarted: boolean = false;
@@ -71,6 +72,9 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
   // // associated with a mouseclick event
   getCoordinates(x: number, y: number): any {
     let box = this.el.nativeElement.getBoundingClientRect();
+
+    if (x < box.left) { x = box.left; }
+
     let oX = x - box.left;
     let oY = y - box.top;
 
@@ -147,30 +151,36 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   clickToFire(event: any): void {
-    this.cancelEventSubs();
-    this.board.disableAll();
-    
     let {row, col} = this.getCoordinates(event.x, event.y);
-    let pending$ = this.bs.fireShot(this.board, row, col);
-    
-    const onClick = fromEvent(document, 'click');
-    const resetEvents = () => {
-      this.cancelEventSubs();
-      this.setUpFiring();
-      this.board.enableAll();
-    }
-    
-    
-    this.eventSubs.push(
-      
-      pending$.pipe(
-        tap((p) => {
-          if (p.time === 0) { resetEvents(); }
-        }),
-        switchMapTo(onClick)
-      ).subscribe(resetEvents)
+    let cell = this.board.getCell(row, col);
 
-    );
+    if (cell && !cell.disabled) {
+      let pending$ = this.bs.fireShot(this.board, row, col);
+      
+      this.cancelEventSubs();
+      this.board.disableAll();
+      
+      const onClick = fromEvent(document, 'click');
+      const resetEvents = () => {
+        this.cancelEventSubs();
+        this.setUpFiring();
+        this.board.enableAll();
+        this.clearFilter.emit();
+      }
+      
+      
+      this.eventSubs.push(
+        
+        pending$.pipe(
+          tap((p) => {
+            if (p.time === 0) { resetEvents(); }
+          }),
+          switchMapTo(onClick)
+        ).subscribe(resetEvents)
+  
+      );
+
+    }
   }
 
   clickToMark(event: any): void {

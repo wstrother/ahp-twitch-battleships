@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Game } from 'src/app/models/game';
 import { DatabaseService } from 'src/app/services/database.service';
 
-interface Generation {
+export interface Generation {
   name: string,
   totalCells: number,
   defaultWidth: number

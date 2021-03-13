@@ -1,6 +1,8 @@
 <div class="cell-inner" 
     (click)="handleClick($event)"
     (contextmenu)="handleClick($event)"
+    [ngClass]="{'disabled': cell.disabled}"
+    [matTooltip]="getTooltip()"
     [ngClass]="{
         'has-ghost-ok': cell.ghost && cell.ghost.ok,
         'has-ghost-not': cell.ghost && !cell.ghost.ok,
@@ -15,16 +17,10 @@
     }"
     [ngStyle]="{
         'width': getCellSize(),
-        'height': getCellSize()
+        'height': getCellSize(),
+        'background-image': getBgImage()
     }"
     
     > 
     
 </div>
-
-<img 
-    *ngIf="cell.data" 
-    src='{{ getImgSrc() }}' 
-    [ngClass]="{'disabled': cell.disabled}"
-    [matTooltip]="getTooltip()"
-    matTooltipShowDelay="750" />

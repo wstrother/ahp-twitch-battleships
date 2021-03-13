@@ -1,4 +1,6 @@
-
+:host {
+    margin-bottom: 3rem;
+}
 
 .placement-form {
     display: flex;
