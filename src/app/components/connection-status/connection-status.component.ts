@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { combineLatest, from, Observable } from 'rxjs';
-import { filter, map, switchMap, take } from 'rxjs/operators';
-import { DatabaseService, GameConnection } from 'src/app/services/database.service';
+import { combineLatest, Observable } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs/operators';
+import { DatabaseService } from 'src/app/services/database.service';
 import { ConnectionStatus, Game } from 'src/app/models/game';
 
 

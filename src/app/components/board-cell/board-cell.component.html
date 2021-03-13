@@ -15,11 +15,16 @@
     }"
     [ngStyle]="{
         'width': getCellSize(),
-        'height': getCellSize(),
-        'background-image': getBgImage()
+        'height': getCellSize()
     }"
-    [matTooltip]="getTooltip()"
-    matTooltipShowDelay="750"
-    >
+    
+    > 
     
 </div>
+
+<img 
+    *ngIf="cell.data" 
+    src='{{ getImgSrc() }}' 
+    [ngClass]="{'disabled': cell.disabled}"
+    [matTooltip]="getTooltip()"
+    matTooltipShowDelay="750" />

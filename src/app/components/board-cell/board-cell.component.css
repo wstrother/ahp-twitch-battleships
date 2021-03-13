@@ -2,17 +2,27 @@
     display: block;
     box-sizing: border-box;
     padding: 0;
+    position: relative;
 }
 
 .cell-inner {
     display: block;
-    width: 25px;
-    height: 25px;
     margin: 0;
     box-sizing: border-box;
-    background-color: white;
+    /* background-color: white; */
     background-origin: border-box;
     background-position: center center;
+    z-index: -1;
+    /* position: relative; */
+    /* overflow: visible; */
+}
+
+img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -65%);
+    z-index: 2;
 }
 
 .shootable:hover {

@@ -5,7 +5,7 @@ import { Board } from 'src/app/models/board';
 import { Ghost, Ship } from 'src/app/models/ship';
 import { BoardService } from 'src/app/services/board.service';
 import { DatabaseService } from 'src/app/services/database.service';
-
+ 
 
 @Component({
   selector: 'app-board-view',

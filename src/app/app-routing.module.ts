@@ -9,7 +9,7 @@ const routes: Routes = [
   {path: 'place', component: PlaceShipsPageComponent},
   {path: 'play', component: PlayGamePageComponent},
   {path: 'new', component: NewGamePageComponent},
-  {path: '', redirectTo: '/new', pathMatch: 'full'},
+  {path: '', redirectTo: '/home', pathMatch: 'full'},
   {path: 'home', component: HomePageComponent}
 ];
 
