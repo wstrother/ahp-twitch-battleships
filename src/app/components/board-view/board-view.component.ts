@@ -42,7 +42,6 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     if (this.fireable) {
-      console.log("Boardview is fireable");
       
       combineLatest([
         this.db.userId$,
@@ -50,7 +49,6 @@ export class BoardViewComponent implements OnInit, AfterViewInit, OnDestroy {
       ]).subscribe(
         ([uid, game]) => {
 
-          console.log("Game state has changed... Boardview subscription callback")
           if (game.otherReady(uid)) { 
             this.setUpFiring(); 
           }

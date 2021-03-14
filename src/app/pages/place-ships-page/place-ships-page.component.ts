@@ -6,7 +6,7 @@ import { Ship } from 'src/app/models/ship';
 import { switchMap, take, tap } from 'rxjs/operators';
 import { DatabaseService } from 'src/app/services/database.service';
 import { MatDialog } from '@angular/material/dialog';
-import { combineLatest } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
 import { PlaceShipsInfoComponent } from 'src/app/blurbs/place-ships-info/place-ships-info.component';
 
 
@@ -18,6 +18,8 @@ import { PlaceShipsInfoComponent } from 'src/app/blurbs/place-ships-info/place-s
 export class PlaceShipsPageComponent implements OnInit {
   board: Board;
   ships: Ship[];
+
+  redirectCheck$: Subscription;
 
   get donePlacing(): boolean {
     return this.ships && this.ships.every(s => s.placed);
@@ -31,6 +33,8 @@ export class PlaceShipsPageComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    console.log("initializing place ships");
+
     this.bs.getBoard()
       .pipe(
         tap((board: Board) => { 
@@ -51,12 +55,14 @@ export class PlaceShipsPageComponent implements OnInit {
         }
     );
 
-    combineLatest([
+    this.redirectCheck$ = combineLatest([
       this.db.userId$,
       this.db.currentGame$
     ]).subscribe(
       ([uid, game]) => {
         if (game.getReady(uid)) {
+          console.log("redirecting...");
+          this.redirectCheck$.unsubscribe();
           this.gotoGame();
         }
       }
@@ -85,6 +91,8 @@ export class PlaceShipsPageComponent implements OnInit {
   gotoGame(): void {
     this.db.currentGame$.pipe(take(1))
       .subscribe(game => {
+        console.log("going to play game");
+        this.redirectCheck$.unsubscribe();
         this.router.navigate(["/play"], {queryParams: {'game': game.key}});
       });
   }

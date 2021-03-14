@@ -28,6 +28,8 @@ export class PlayGamePageComponent implements OnInit {
   cancelMessage: string = "";
   pendingTime: number;
 
+  boardsSet: boolean = false;
+
   private _currentShots: Shot[] = [];
   private _otherShots: Shot[] = [];
 
@@ -46,7 +48,7 @@ export class PlayGamePageComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    let boardsSet = false;
+    console.log("initializing play game page");
 
     const handleConnection = ([uid, game]) => {
 
@@ -55,9 +57,10 @@ export class PlayGamePageComponent implements OnInit {
 
       if (ready) {
 
-        if (!boardsSet) {
+        if (!this.boardsSet) {
+          this.boardsSet = true;
+          console.log("calling set boards");
           this.setBoards();
-          boardsSet = true;
         }
         
         if (!otherReady) {
@@ -171,7 +174,8 @@ export class PlayGamePageComponent implements OnInit {
         this.bs.handleShot(board, shot);
       }
     }
- 
+
+    console.log("subscribing to get Boards...");
     combineLatest([
       this.bs.getBoard(),
       this.bs.getBoard()
@@ -189,8 +193,10 @@ export class PlayGamePageComponent implements OnInit {
           }
         );
 
-        this.db.otherShips$.pipe(take(1))
+        console.log("subscribing to other ships");
+        this.db.otherShips$
           .subscribe((ships) => {
+            console.log(ships);
             this.playerBoard.placeShips(ships);
           }
         );
