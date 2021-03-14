@@ -1,0 +1,33 @@
+<h2>Playing the Game</h2>
+    
+<div class="info-panel">
+
+    <div class="info-snapshot">
+        <img src="../../../assets/play-game-snapshot.png" matTooltip="How to Play" />
+    </div>
+    
+    <div class="info-body">
+
+        <p>
+            Once you click the button to start the game, your ships' positions are set and you cannot go back and change them. If your opponent hasn't connected or is still
+            placing their ships you'll see a message to wait. You can review the position of your ships and what shots your opponent has taken in the "Your Ships" tab.
+            You will also see an alert at the bottom of the screen whenever your opponent fires a shot.
+        </p>
+
+        <p>
+            When you click on a Pokemon to fire your shot, there will be a 3 second countdown timer during which you can click anywhere to cancel your shot. It also displays the
+            name of the Pokemon you've clicked on. That way if you click the wrong cell accidentally you will have a chance to correct it before sending the shot to your opponent.
+            There is also a running total of the number of shots you've fired in the bottom right corner. In the bottom left is a filter where you can search by name, to remove
+            the Pokemon you're not looking for. Clicking the 'x' icon that appears next to the filter or hitting the 'escape' key will automatically clear it, as will firing your
+            next shot.
+        </p>
+
+        <p>
+            Additionally, you can 'mark' certain cells by right-clicking on them, so you can make deductions about where your opponent's ships might be.
+        </p>
+    </div>
+</div>
+
+<mat-dialog-actions *ngIf="asDialog" align="end">
+    <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

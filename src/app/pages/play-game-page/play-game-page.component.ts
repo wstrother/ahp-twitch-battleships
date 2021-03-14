@@ -1,8 +1,10 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatSnackBar, MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { combineLatest, partition, Subject } from 'rxjs';
 import { take, tap } from 'rxjs/operators';
+import { PlayGameInfoComponent } from 'src/app/blurbs/play-game-info/play-game-info.component';
 import { Board } from 'src/app/models/board';
 import { Ship } from 'src/app/models/ship';
 import { Shot } from 'src/app/models/shot';
@@ -17,7 +19,6 @@ import { DatabaseService } from 'src/app/services/database.service';
 export class PlayGamePageComponent implements OnInit {
   playerBoard: Board;
   otherBoard: Board;
-  gameReady: boolean = false;
 
   playerShips: Ship[] = [];
   otherShips: Ship[] = [];
@@ -40,7 +41,8 @@ export class PlayGamePageComponent implements OnInit {
     private router: Router, 
     private db: DatabaseService, 
     private bs: BoardService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
@@ -64,7 +66,6 @@ export class PlayGamePageComponent implements OnInit {
         
         if (otherReady) {
           this.pendingMessage = "";
-          this.gameReady = true;
           this.setAlerts();
           this.setPending();
         }
@@ -97,6 +98,11 @@ export class PlayGamePageComponent implements OnInit {
 
     return total;
   }
+
+  openHelp(): void {
+    this.dialog.open(PlayGameInfoComponent);
+  }
+
 
   setFilter(event: any): void {
     if (event.code === "Escape") {

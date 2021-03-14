@@ -1,0 +1,43 @@
+<h2>Making a New Game</h2>
+        
+<p>Below you'll see the UI for the <a [routerLink]="['/new']">New Game</a> form. </p>
+
+<img src="../../../assets/new-game-snapshot.png" matTooltip="New Game Options" />
+
+<h3>Game Name</h3>
+
+<p>Pick a name for your game if you want to.</p>
+
+<h3>Select Gen</h3>
+
+<p>
+    Choose the generation of Pokemon game you're playing. Currently this app only supports Generations I - III and presumes the use of a ROM randomizer
+    that includes all the Pokemon in the National Dex up to that point. In the future I'd like to include support for custom sets of Pokemon, including the
+    'vanilla' Regional Dex lists for each game, but that will depend on if there's enough interest from users.
+</p>
+
+<h3>Number of Columns</h3>
+
+<p>
+    This determines the shape of the board. By default, it will try to generate as "square" a board as possible, but for later gens it may look better on
+    your layout to add more room for columns. Once the game is generated, the layout cannot be changed.
+</p>
+
+<h3>Total Cells</h3>
+
+<p>
+    This determines the total number of cells on the board with Pokemon placed in them. If you want to limit the number of relevant Pokemon you can lower
+    this number, but if you're not using the randomize feature, it will cut off the Pokemon included after that Dex number (i.e. a 100 cell, non-randomized
+    game always ends with Voltorb.)
+</p>
+
+<h3>Randomize</h3>
+
+<p>
+    This feature randomizes the order of the Pokemon placed on the board, and is highly reccomended so that horizontal ships don't tend to contain evolutionary
+    lines.
+</p>
+
+<mat-dialog-actions *ngIf="asDialog" align="end">
+    <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

@@ -7,6 +7,7 @@ import { switchMap, take, tap } from 'rxjs/operators';
 import { DatabaseService } from 'src/app/services/database.service';
 import { MatDialog } from '@angular/material/dialog';
 import { combineLatest } from 'rxjs';
+import { PlaceShipsInfoComponent } from 'src/app/blurbs/place-ships-info/place-ships-info.component';
 
 
 @Component({
@@ -70,6 +71,10 @@ export class PlaceShipsPageComponent implements OnInit {
         if (result) { this.startGame(); }
       }
     );
+  }
+
+  openHelp(): void {
+    this.dialog.open(PlaceShipsInfoComponent);
   }
 
   startGame(): void {

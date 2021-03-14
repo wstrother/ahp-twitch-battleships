@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { NewGameInfoComponent } from 'src/app/blurbs/new-game-info/new-game-info.component';
 import { Game } from 'src/app/models/game';
 import { DatabaseService } from 'src/app/services/database.service';
 
@@ -44,6 +45,10 @@ export class NewGamePageComponent implements OnInit {
         if (result) { this.makeGame(); }
       }
     );
+  }
+
+  openHelp(): void {
+    this.dialog.open(NewGameInfoComponent);
   }
 
   makeGame(): void {

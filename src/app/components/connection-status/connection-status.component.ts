@@ -21,12 +21,6 @@ export class ConnectionStatusComponent implements OnInit {
   constructor(private db: DatabaseService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    this.db.userId$.subscribe(
-      (uid: string) => {
-        console.log("uid:", uid);
-      }
-    );
-
     this.getGameParam()
       .pipe(
         filter(gameKey => !!gameKey),

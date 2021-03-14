@@ -26,6 +26,11 @@ import { ConnectionStatusComponent } from './components/connection-status/connec
 import { PlayGamePageComponent } from './pages/play-game-page/play-game-page.component';
 import { ShipContainerComponent } from './components/ship-container/ship-container.component';
 import { HomePageComponent } from './pages/home-page/home-page.component';
+import { BattleshipsInfoComponent } from './blurbs/battleships-info/battleships-info.component';
+import { NewGameInfoComponent } from './blurbs/new-game-info/new-game-info.component';
+import { PlaceShipsInfoComponent } from './blurbs/place-ships-info/place-ships-info.component';
+import { PlayGameInfoComponent } from './blurbs/play-game-info/play-game-info.component';
+import { RandomizeInfoComponent } from './blurbs/randomize-info/randomize-info.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +45,12 @@ import { HomePageComponent } from './pages/home-page/home-page.component';
     NewGameDialogComponent,
     StartGameDialogComponent,
     ShipContainerComponent,
-    HomePageComponent
+    HomePageComponent,
+    BattleshipsInfoComponent,
+    NewGameInfoComponent,
+    PlaceShipsInfoComponent,
+    PlayGameInfoComponent,
+    RandomizeInfoComponent
   ],
   imports: [
     BrowserModule,

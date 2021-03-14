@@ -2,10 +2,16 @@
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
-    margin-bottom: 3rem;
 }
 
-
+.help-btn {
+    margin-top: 2rem;
+    background-color: white;
+    position: fixed;
+    color: rgb(202, 202, 202);
+    bottom: 2rem;
+    left: 2rem;
+}
 
 .boards-panel {
     display: flex;

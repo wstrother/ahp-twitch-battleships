@@ -11,3 +11,13 @@ mat-form-field {
     display: flex;
     flex-direction: column;
 }
+
+
+.help-btn {
+    margin-top: 2rem;
+    background-color: white;
+    position: fixed;
+    color: rgb(202, 202, 202);
+    bottom: 2rem;
+    left: 2rem;
+}

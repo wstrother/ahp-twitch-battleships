@@ -11,3 +11,9 @@ body {
     flex-direction: column;
     justify-content: stretch;
 }
+
+img {
+    border: 1px solid black;
+    box-shadow: 1px 1px 3px black;
+    max-width: 75%;
+}

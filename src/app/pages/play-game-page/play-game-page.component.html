@@ -9,7 +9,7 @@
                 *ngIf="playerBoard"
                 [board]="playerBoard"
                 [placeable]="false"
-                [fireable]="gameReady"
+                [fireable]="true"
                 [showShips]="false"
                 (clearFilter)="clearFilter()"
                 ></app-board-view>
@@ -60,3 +60,7 @@
 
     </div>
 </div>
+
+<button class="help-btn" mat-icon-button (click)="openHelp()">
+    <mat-icon>help</mat-icon>
+</button>

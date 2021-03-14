@@ -6,13 +6,6 @@ button {
 :host {
     display: flex;
     flex-direction: column;
-    margin-bottom: 3rem;
-}
-
-img {
-    border: 1px solid black;
-    box-shadow: 1px 1px 3px black;
-    max-width: 75%;
 }
 
 mat-tab-group {
