@@ -59,7 +59,7 @@ export class PlayGamePageComponent implements OnInit {
 
         if (!this.boardsSet) {
           this.boardsSet = true;
-          console.log("calling set boards");
+          // console.log("calling set boards");
           this.setBoards();
         }
         
@@ -175,7 +175,7 @@ export class PlayGamePageComponent implements OnInit {
       }
     }
 
-    console.log("subscribing to get Boards...");
+    // console.log("subscribing to get Boards...");
     combineLatest([
       this.bs.getBoard(),
       this.bs.getBoard()
@@ -193,11 +193,15 @@ export class PlayGamePageComponent implements OnInit {
           }
         );
 
-        console.log("subscribing to other ships");
+        // console.log("subscribing to other ships");
         this.db.otherShips$
           .subscribe((ships) => {
-            console.log(ships);
-            this.playerBoard.placeShips(ships);
+            // console.log(ships);
+            // HARD CODED BUG FIX -- MUST BE REFACTORED
+            if (ships.length === 5 && ships.every(s => s.placed)) {
+
+              this.playerBoard.placeShips(ships);
+            }
           }
         );
 
